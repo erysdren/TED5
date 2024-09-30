@@ -6,15 +6,15 @@ use TED5 was Rise of the Triad: Dark War, released in late 1994 by Apogee.
 
 # Documentation
 
-- [`IGRAB.TXT` (1993/02/04)](./docs/igrab.txt)
-- [`INFO.TXT` (1993/02/04)](./docs/info.txt)
-- [`HACKROTT.COM` (1995/02/14)](./docs/hackrott.txt)
-- [`README.TXT` (1995/10/20)](./docs/readme.txt)
-- [`TEDHELP.EXE` (1995/11/01)](./docs/tedhelp.txt)
+- [`IGRAB.TXT`](./docs/igrab.txt) - IGRAB Header Format v1.0 (1993/02/04)
+- [`INFO.TXT`](./docs/info.txt) - TED v5.0 Features (1993/02/04)
+- [`HACKROTT.COM`](./docs/hackrott.txt) - Rise of the Triad Version 1.1 Hacker Info (1995/02/14)
+- [`README.TXT`](./docs/readme.txt) - TED v5.0 Source Code Notes (1995/10/20)
+- [`TEDHELP.EXE`](./docs/tedhelp.txt) - TED v5.0 User Guide and History (1995/11/01)
 
 # Archive
 
-- [`TED5.ZIP` (1995/11/02)](./archive/ted5.zip)
+- [`TED5.ZIP`](./archive/ted5.zip) - TED v5.0 Source Code and Samples (1995/11/02)
 
 # License
 
