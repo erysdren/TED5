@@ -1,0 +1,275 @@
+───────────────────────────────────────────────────────────────────────────────
+                                     ┌───┐
+                                     │TED│
+                                     └───┘
+
+    This program is TED (Tile EDitor).  Ted is the program that Apogee used
+to create all the levels that are in Rise of the Triad.  Ted has also been used
+ in several other programs by Apogee & id Software.  If you like making levels
+   on your own, then this is for you.  This editor will not edit the existing
+        levels, but you can make your own!  This is a DOS based program.
+
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │ This information is provided as is.  It is very possible to corrupt  │
+    │ your copy of Rise of the Triad using this, so make backups!!  Apogee │
+    │ cannot and will not support the use of this program.  If you choose  │
+    │ to use it, you do so on your own.  We cannot help with questions     │
+    │ about this program or its use.                                       │
+    └──────────────────────────────────────────────────────────────────────┘
+
+                                ┌──────────────┐
+                                │ A TED PRIMER │
+                                │HOW TO USE TED│
+                                └──────────────┘
+                     by Tom Hall, Creative Director of ROTT
+
+TED is a very useful Tile EDitor that's been around for quite a while.
+This document will go over editing things in TED, how to make new project,
+and how to get you own graphics into TED for your own uses.
+
+LAUNCHING TED
+To launch TED, you need TED5.EXE to be in your path.  You also need the
+graphics files for the tiles (in EGA*.XXX and GFX*.XXX, where XXX is the
+extension of the project).  You need the map-related files (MAP*.XXX and
+TEDINFO.XXX).  A set of Sample maps are all in the SAMPLMAP directory for
+your perusal.  If you were in this directory and TED5 was in your path,
+you could type T, which runs T.BAT.  To launch TED manually, you would type
+
+TED5 /ext=SAM /gfx=e /about
+
+where /ext specifies the extension of the project,
+
+/gfx=e says the graphics to look for are in EGA
+          (TED supports CGA and was supposed to support VGA),
+
+/noabout stops the About Ted dialog from popping up each time you launch it.
+
+You must have a mouse to use TED.
+
+EDITING MAPS
+TED maps have three "planes" of data:  a Background plane, which contains the
+floors and walls (and some other stuff); the Foreground plane, which contains
+actor icons, arrows for moving things, sprite icons, and more; and the Info
+plane, which contains platforms, which sprites and actors can be on, other
+things and after the value 18, it contains location values for switches and
+touchplates, height values for sprites, song values at the start of the map,
+time values for clocks, and so on.  These three planes can provide a lot of
+data for you at once.  You don't have to look at them all at once.  Pressing
+4, 5, or 6 will turn off each plane, and pressing it again with turn the plane
+on.  If a plane is not displayed, you cannot draw to it with the mouse.
+Pressing 1, 2, or 3 will control which planes you draw on when you left click
+the mouse, or do some other operation.  You cannot turn on drawing to a plane
+that isn't being displayed.  For example, pressing three will do nothing if
+you've pressed 6 to turn off the Info plane. And pressing 6 will automatically
+turn off drawing to 3, which you need to watch sometimes!  You may not place
+everything you wanted to.
+
+On a side note, the planes got their names while doing Commander Keen, because
+we needed background graphics, foreground graphics so Keen could go behind
+things, and an info plane to describe where doors took him to and so on.
+Tiles can also have attributes, but this will in no way enter into ROTT maps.
+
+The mouse allows you to do a few things:
+IN THE MAP VIEW
+Left Mouse Button    Draw current selected tiles to currently selected planes.
+Right Mouse Button   Pick up value of current selected planes
+
+Clicking on the tiles in the lower left corner will bring up a selection box
+for that plane.  Clicking on the menu above will obviously select pull down
+menus, which work like a Macintosh or Apple IIgs does.
+
+There are a few basic controls to 90% of TED use:
+Arrows	Move around map
+1               Toggle Background plane drawing on/off
+2               Toggle Foreground plane drawing
+3               Toggle Info plane drawing
+4               Toggle Background plane display on/off
+5               Toggle Foreground plane display
+6               Toggle Info Plane display
+Spacebar        Go to tile selection window
+Enter           Enter a value for the Info plane (XXXX for decimal or $XXXX
+                for hex, where XXXX is whatever number you want to enter)
+Ctrl-Arrows     Move a screen at a time in any direction
+G               Grid mode: not too useful for ROTT, but good for sidescrollers.
+B               Draw a block of the current selected tiles into current
+                selected planes.
+C               Copy a block: left click in upper left corner, right click in
+                lower right. Enter to copy it into buffer. Esc to stop process.
+P               Paste from copy buffer wherever mouse is--beep indicates
+                success or not
+F               Flood-fill one plane's tiles with currently selected tile.
+Ctrl-F          Flood fill area with whatever is in copy buffer.
+T               Tile search--looks for currently selected tile in map, lists
+                it as hex numbers
+U               Undo last action.  This is occasionally erratic.  Be careful!
+I               Display map info.
+F3              Toggles whether blank spaces are overwritten by brush, or see
+                through.
+Alt-X           Quit program.
+Alt-S           Save map
+Alt-O           Open a new map
+Alt-D           Delete current map
+Alt-W           Swap two maps' positions
+
+There are a lot of constructs to explain in the making of TED maps.  Please
+refer to ROTSPEC1.DOC for that information.
+
+MAKING A NEW PROJECT
+The easiest way to make a new project is to cannibalize the old one.  You can
+copy *.SAM to *.NEW, and all the necessary files will be copied.  Now you have
+to change the BAT files to operate with the new extension, and to save out a
+different name, like NEWLEVS.RTL.
+
+CHANGING THE TILES
+There is a TEDTILES directory with an old utility called IGRAB.  This was used
+in KEEN and WOLFENSTEIN 3-D.  IGRAB will grab CGA, EGA, and VGA graphics, in a
+variety to formats.  As provided here, it is set up for just EGA tiles, and
+that's all.  See the source code for grabbing other things.  If you have the
+programming savvy to do that, though, you probably have the savvy to write
+your own. Most of the formats are stuck on a grid, like the TED tiles provided.
+
+WEIRD TILES
+We were going to take out some of the unused tiles, but we left them in as
+interesting historical notes. Note the "H2O", "Wind", and "Monk Wind" sprites.
+These were sound sources to be placed in the maps, for rushing water (to be
+placed near waterfalls), howling wind, and a weird keening sound. We never got
+perfect sounds for these, and there was just too much else going on, so there
+are icons for them, but nothing happens in the game when you use them.
+
+The 1-18 triangles were going to be put in maps for indicators of what order
+to do things.  No time, so they were never used.
+
+I did take a pillar icon out of NBACK1E, since it was never used and looks
+weird.  It was to be a tiled sprite, that looked like a ceiling-high pillar.
+It didn't look right, so out it went.
+
+So, there are lots of things in the development process that just get left by
+the wayside, all for the sake of actually getting the thing out in this
+century.
+
+                                ┌──────────────┐
+                                │HISTORY OF TED│
+                                └──────────────┘
+                     by Tom Hall, Creative Director of ROTT
+
+TED is an old chum that I eulogize within.  I have used TED for about four
+years now, and this is its final resting place -- at least for me.
+
+                              IN THE BEGINNING...
+                              ===================
+
+John Romero wrote TED as the Tile EDitor for the games he, John Carmack, and I
+were working on in Softdisk's Gamer's Edge department.  Lane Roathe was in the
+department for a while, but Romero and I were the ones really using it.  I had
+started sneaking in at night after working in the Apple department, because
+what they were doing was so much fun. Carmack and Romero could concentrate on
+the programming while I made levels and so on.
+
+The first game was actually a joke. It was called Dangerous Dave in "Copyright
+Infringement." Carmack had just gotten a little guy to move around over a tile
+map, and I looked over at the Nintendo in the corner.  I said, "Wouldn't it be
+funny to make the first level of Super Mario 3...tonight?"  Carmack smiled and
+said, "Let's do it!"  I copied the tiles pixel for pixel and made a map out of
+them while Carmack feverishly programmed the guy landing on ground tiles and
+getting coin tiles.  At 5:30 in the morning, we dumped that on Romero's desk
+and went home to crash.  Romero played it all the next day, saying "This could
+make so much money!"  It was pitched to a friend of a friend at Nintendo, and
+they liked it so much, they wanted a demo.  We added Mario graphics and Koopas
+and stuff, and sent it to them. It apparently got to the head guys at Nintendo,
+but they didn't want to enter the PC market.  Softdisk didn't want to use the
+smooth scrolling trick Carmack had discovered (since it didn't also work in
+CGA!), so we thought, well, if they don't want it, we could do something
+ourselves....  Thus Commander Keen was born.
+
+We soon left Softdisk with Adrian Carmack, a fine artist that had joined the
+team a few months later.  I stayed at Softdisk for three months while I was
+replaced as editor for three of the monthly products.  Jay Wilbur and Kevin
+Cloud came on board during Wolfenstein.
+
+                                   THE GAMES
+                                   =========
+
+In addition to these two aforementioned demos, we did use the editor for a
+bunch of real games.
+
+Games we did for Softdisk with TED (all in EGA 16-color graphics):
+==================================================================
+Game                   Type
+---------------------------
+Slordax                Shooter
+Shadow Knights         Side-scroller
+Rescue Rover I & II    Overhead puzzle game (among our most favorite games)
+Dangerous Dave in      Side-scroller (another big favorite, although they made
+  the Haunted Mansion                 us take the blood out.)
+Hovertank One          id's first 3D action game, although the walls were just
+                       solid-color polygons
+Keen Dreams            The "Lost Episode" of Keen, where he falls asleep and
+                       is attacked by all the vegetables he has refused to eat
+Catacomb 3-D           The first texture-mapped fast action game (pre-Wolf3D!)
+
+We did other games, but they didn't use TED.
+
+After we left, Softdisk continued to use TED, in the following games:
+=====================================================================
+The Catacomb 3D trilogy (Abyss, Armageddon, Apocalypse)
+Dangerous Dave II & III
+Biodomes
+Xenopods
+Aerodrome
+Scubaventure
+Paragon
+
+id used TED on eight games of their own:
+========================================
+Commander Keen in "Invasion of the Vorticons"
+	Marooned on Mars, The Earth Explodes, and Keen Must Die
+Commander Keen in "Goodbye, Galaxy!"
+	Secret of the Oracle, The Armageddon Machine
+Commander Keen in "Aliens Ate My Baby Sitter!"
+Wolfenstein 3D
+Spear of Destiny
+Wolfenstein for Super Nintendo
+Wolfenstein VR (for a VR booth-type game)
+
+Apogee uses of TED
+==================
+Bio Menace (licensed Keen Engine)
+Blake Stone: Aliens of Gold
+Blake Stone: Planet Strike
+Rise of the Triad
+When I came over to Apogee to head up in-house development, we used TED for
+Rise of the Triad, which started life as Wolfenstein, Part Two.  So far, that
+makes 34 projects using TED.  Plus we had planned to do an overhead game called
+Fight for Justice after the first Keen, based on the same world that Quake is.
+And an aborted overhead shooter called Complete Planetary Domination.  And a
+Apple II game Carmack and I never finished, called Penultima III.  And there
+was an aborted project at Apogee called Wards of Wandaal.  So that makes 38
+projects that TED maps were edited for.  Wow.
+
+                                PROGRAMMING TED
+                                ===============
+
+Somewhere in the original TED documentation, John Romero described his
+"triumphant" fill routine, liberally paraphrased and embellished as follows:
+
+"Once in a while a programmer really writes something he's proud of, a slick,
+elegant, blazingly fast routine that stands as a benchmark against which other
+code will be judged by.  However, this is not the case with TED's fill routine.
+This slow, stupid algorithm will casually fill one plane of data in a painfully
+creeping manner.  Press ESC when it gets confused."
+
+In preparing the release of TED, Mark Dochtermann fixed the scrolling bug
+that's been in TED for a long time.  Sure, the last day we use it, and it gets
+fixed!
+
+On another programming note, the VGA mode has never really worked in TED.
+That might be a good project for you hackers out there.  Have fun.  A Win 95
+version would be cool, too.
+
+CONCLUSION
+So ROTT may be the final game to use TED.  But now that you have the source
+code, and Wolfenstein's source code is out on the net, there are some fun games
+to be made.  As for me, I bid TED a fond adieu, and say hello to a cool 3D
+editor on the NeXT,  where we'll be making the levels for our new action game,
+Prey.  TED is dead.  Long live TED!
+
