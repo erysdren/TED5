@@ -19,23 +19,23 @@
 // LBMload PROTOs
 //
 
-void GetChunkID(char huge *buffer,char *tempstr);
-int  NextChunkID(char huge *buffer);
-void huge *Decompress(char huge *buffer,char *unpacked,int bpwidth,char planes);
-void huge *SetupLBM(char *filename);
-void Do_CGA_Screen(char huge *buffer,char compress,char planes,int width,int height,char huge *scrnmem);
-void Do_EGA_Screen(char huge *buffer,char compress,char planes,int width,int height,char huge *scrnmem);
-void Do_MCGA_Screen(char huge *buffer,char compress,int width,int height,char huge *scrnmem);
+void GetChunkID(char *buffer,char *tempstr);
+int  NextChunkID(char *buffer);
+void *Decompress(char *buffer,char *unpacked,int bpwidth,char planes);
+void *SetupLBM(char *filename);
+void Do_CGA_Screen(char *buffer,char compress,char planes,int width,int height,char *scrnmem);
+void Do_EGA_Screen(char *buffer,char compress,char planes,int width,int height,char *scrnmem);
+void Do_MCGA_Screen(char *buffer,char compress,int width,int height,char *scrnmem);
 
-char typestr[5],huge *startbuff;
+char typestr[5],*startbuff;
 
 
 //
 // Here goes!
 //
-char huge *LoadLBM(char *filename,LBMtype *thelbm)
+char *LoadLBM(char *filename,LBMtype *thelbm)
 {
- char huge *buffer,huge *cmap,huge *scrnmem;
+ char *buffer,*cmap,*scrnmem;
  char planes,tempstr[5],compress;
  unsigned handle,width,height;
 
@@ -65,7 +65,7 @@ char huge *LoadLBM(char *filename,LBMtype *thelbm)
   thelbm->height=height;
   thelbm->planes=planes;
 
-  if ((scrnmem=(char huge *)farmalloc((long)(width/8)*height*planes))==NULL)
+  if ((scrnmem=(char *)malloc((int32_t)(width/8)*height*planes))==NULL)
     {
      char str[100]="Not enough memory for loading the ILBM screen '";
 
@@ -116,7 +116,7 @@ char huge *LoadLBM(char *filename,LBMtype *thelbm)
 
 	       if (!noshow)
 		 {
-		  for (i=0;i<0x300;i++) (unsigned char)*cmap++ >>= 2;
+		  for (i=0;i<0x300;i++) (uint8_t)*cmap++ >>= 2;
 
 		  cmap -= 0x300; // reset to beginning again
 
@@ -142,22 +142,22 @@ char huge *LoadLBM(char *filename,LBMtype *thelbm)
 		errout(msg);
 	       }
     }
-  farfree((void far *)startbuff);
+  free((void *)startbuff);
  return scrnmem;
 }
 
 
-void huge *SetupLBM(char *filename)
+void *SetupLBM(char *filename)
 {
- long filesize;
+ int32_t filesize;
  int handle;
- char huge *buffer;
+ char *buffer;
  char tempstr[64],errst[120];
 
 
 
  filesize = filelen(filename);
- buffer = startbuff = (char huge *)farmalloc(filesize);
+ buffer = startbuff = (char *)malloc(filesize);
  if (buffer==NULL)
  {
    strcpy(errst,"Not enough memory to load ILBM file! Size=");
@@ -211,7 +211,7 @@ void huge *SetupLBM(char *filename)
 
 
 
-void GetChunkID(char huge *buffer,char *tempstr)
+void GetChunkID(char *buffer,char *tempstr)
 {
   movedata(FP_SEG(buffer),FP_OFF(buffer),_DS,(unsigned)tempstr,4);
   tempstr[4]=0;
@@ -220,7 +220,7 @@ void GetChunkID(char huge *buffer,char *tempstr)
 
 
 
-int NextChunkID(char huge *buffer)
+int NextChunkID(char *buffer)
 {
   unsigned int newoffset;
 
@@ -235,10 +235,10 @@ int NextChunkID(char huge *buffer)
 ** CGA loader
 */
 /////////////////////////////////////////////////////////////
-void Do_CGA_Screen(char huge *buffer,char compress,char planes,int width,int height,char huge *scrnmem)
+void Do_CGA_Screen(char *buffer,char compress,char planes,int width,int height,char *scrnmem)
 {
  unsigned int bpwidth,loopY,loopX,loopB,offset,data;
- char huge *screen,b1,b2,unpacked[1280];
+ char *screen,b1,b2,unpacked[1280];
 
  bpwidth = width/8;
 
@@ -318,12 +318,12 @@ void Do_CGA_Screen(char huge *buffer,char compress,char planes,int width,int hei
 // EGA loader
 //
 /////////////////////////////////////////////////////////////
-void Do_EGA_Screen(char huge *buffer,char compress,char planes,int width,int height,char huge *scrnmem)
+void Do_EGA_Screen(char *buffer,char compress,char planes,int width,int height,char *scrnmem)
 {
  unsigned bpwidth,loopY,loopX,loopB,offset,data,dest,j;
- char huge *screen,b1,b2,unpacked[1280], // 8 screens wide max!!!
-	  huge *plane[4];
- long size;
+ char *screen,b1,b2,unpacked[1280], // 8 screens wide max!!!
+	  *plane[4];
+ int32_t size;
 
 
  bpwidth = width/8;
@@ -368,10 +368,10 @@ void Do_EGA_Screen(char huge *buffer,char compress,char planes,int width,int hei
 ** MCGA loader
 */
 /////////////////////////////////////////////////////////////
-void Do_MCGA_Screen(char huge *buffer,char compress,int width,int height,char huge *scrnmem)
+void Do_MCGA_Screen(char *buffer,char compress,int width,int height,char *scrnmem)
 {
  unsigned int bpwidth,loopY,loopX,loopB,offset,data;
- char huge *screen,b1,b2,unpacked1[1280],unpacked[1280];
+ char *screen,b1,b2,unpacked1[1280],unpacked[1280];
 
 
  screen=scrnmem;
@@ -389,7 +389,7 @@ void Do_MCGA_Screen(char huge *buffer,char compress,int width,int height,char hu
 	      for (tloop=0;tloop<40;tloop++)
 		  {
 		   int tloop1,tloop2;
-		   unsigned char mask[8] = { 0x80,0x40,0x20,0x10,8,4,2,1 };
+		   uint8_t mask[8] = { 0x80,0x40,0x20,0x10,8,4,2,1 };
 
 		   for (tloop1=0;tloop1<8;tloop1++)
 		     for (tloop2=0;tloop2<8;tloop2++)
@@ -419,10 +419,10 @@ void Do_MCGA_Screen(char huge *buffer,char compress,int width,int height,char hu
 ** takes up, and the # of bit planes to unpack.
 */
 /////////////////////////////////////////////////////////////
-void huge *Decompress(char huge *buffer,char *unpacked,int bpwidth,char planes)
+void *Decompress(char *buffer,char *unpacked,int bpwidth,char planes)
 {
  int count,offset,loopP;
- unsigned char byte,rept;
+ uint8_t byte,rept;
 
  #if 0
  for (loopP=0;loopP<planes;loopP++)
@@ -524,7 +524,7 @@ void huge *Decompress(char huge *buffer,char *unpacked,int bpwidth,char planes)
 // move an EGA bitplane
 //
 /////////////////////////////////////////////////////////////
-void EGA_MoveBitplane(char huge *from,char far *to,int bpwidth)
+void EGA_MoveBitplane(char *from,char *to,int bpwidth)
 {
  unsigned width;
 

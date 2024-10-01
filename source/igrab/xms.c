@@ -8,7 +8,7 @@
 
 
 unsigned XMSavail;
-void far *XMSdriver;
+void *XMSdriver;
 
 
 ////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ void XMSerror(void)
 // Allocate XMS memory
 //
 ////////////////////////////////////////////////////
-int XMSAllocate(long size)
+int XMSAllocate(int32_t size)
 {
  unsigned rdx=(size+1023)/1024;
 
@@ -122,15 +122,15 @@ unsigned XMSTotalFree(void)
 // Move XMS memory
 //
 ////////////////////////////////////////////////////
-struct { long bsize;
+struct { int32_t bsize;
 	 int shandle;
-	 long soff;
+	 int32_t soff;
 	 int dhandle;
-	 long doff;
+	 int32_t doff;
        } XMSparms;
 
 
-void XMSmove(int srchandle,long srcoff,int desthandle,long destoff,long size)
+void XMSmove(int srchandle,int32_t srcoff,int desthandle,int32_t destoff,int32_t size)
 {
  unsigned DSreg,SIreg;
 

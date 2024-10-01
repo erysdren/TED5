@@ -13,7 +13,7 @@ OptStruct Optimum;
 // EGAblit : blits an EGA shape from memory to the EGA screen
 //
 ////////////////////////////////////////////////////////////
-void EGAblit(int x,int y,int width,int height,char huge *buffer)
+void EGAblit(int x,int y,int width,int height,char *buffer)
 {
  unsigned ESreg,DIreg,SIreg,DSreg,where,oheight,owidth,addx,addy;
 
@@ -138,10 +138,10 @@ void DoEGAblit(int x,int y,int width,int height)
 // NOTE: I expect X & WIDTH to be in BYTE values, not pixels!
 //
 ////////////////////////////////////////////////////////////
-void EGAgrab(int x,int y,int width,int height,long offset)
+void EGAgrab(int x,int y,int width,int height,int32_t offset)
 {
  unsigned ESreg,DIreg,SIreg,DSreg,scrnwid;
- long off,size;
+ int32_t off,size;
 
 
  scrnwid=CurrentLBM.width/8;
@@ -204,7 +204,7 @@ void EGAgrab(int x,int y,int width,int height,long offset)
 // EGAMblit : blits an EGA masked shape from memory to the EGA screen
 //
 ////////////////////////////////////////////////////////////
-void EGAMblit(int x,int y,int width,int height,char huge *buffer)
+void EGAMblit(int x,int y,int width,int height,char *buffer)
 {
  unsigned MASKoff,DATAoff,ESreg,DIreg,SIreg,DSreg,where,oheight,owidth,addx,addy;
 
@@ -232,7 +232,7 @@ void EGAMblit(int x,int y,int width,int height,char huge *buffer)
  outport(GCindex,GCmode);
  DSreg=FP_SEG(buffer);
  MASKoff=FP_OFF(buffer);
- DATAoff=FP_OFF((char far *)buffer+owidth*oheight);
+ DATAoff=FP_OFF((char *)buffer+owidth*oheight);
  where=y*40+x;
 
  asm	push	si
@@ -326,7 +326,7 @@ void DoEGAMblit(int x,int y,int width,int height,int yadd,int hadd)
  else
  if (yadd || hadd)
    {
-    char huge *EGAscrn=MK_FP(0xa000,0);
+    char *EGAscrn=MK_FP(0xa000,0);
 
     outport(GCindex,GCmode);
 
@@ -373,7 +373,7 @@ void DoEGAMblit(int x,int y,int width,int height,int yadd,int hadd)
 // NOTE: I expect X & WIDTH to be in BYTE values, not pixels!
 //
 ////////////////////////////////////////////////////////////
-void EGAMgrab(int x,int y,int width,int height,long offset,int optimize)
+void EGAMgrab(int x,int y,int width,int height,int32_t offset,int optimize)
 {
  unsigned j,maskoff,ESreg,DIreg,SIreg,DSreg,size,scrnwid,tmpset=0;
 

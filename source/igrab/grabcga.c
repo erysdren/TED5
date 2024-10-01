@@ -14,7 +14,7 @@
 // CGAblit : blits a CGA shape from memory to the CGA screen
 //
 ////////////////////////////////////////////////////////////
-void CGAblit(int x,int y,int width,int height,char huge *buffer)
+void CGAblit(int x,int y,int width,int height,char *buffer)
 {
  unsigned ESreg,DIreg,SIreg,DSreg,where,owidth,addx;
 
@@ -185,7 +185,7 @@ void CGAgrab(int x,int y,int width,int height,unsigned offset)
 // CGAMblit : blits a CGA masked shape from memory to the CGA screen
 //
 ////////////////////////////////////////////////////////////
-void CGAMblit(int x,int y,int width,int height,char huge *buffer)
+void CGAMblit(int x,int y,int width,int height,char *buffer)
 {
  unsigned MASKoff,DATAoff,ESreg,DIreg,SIreg,DSreg,where,oheight,owidth,addx;
 
@@ -211,7 +211,7 @@ void CGAMblit(int x,int y,int width,int height,char huge *buffer)
 
  DSreg=FP_SEG(buffer);
  MASKoff=FP_OFF(buffer);
- DATAoff=FP_OFF((char far *)buffer+owidth*oheight);
+ DATAoff=FP_OFF((char *)buffer+owidth*oheight);
  where=(y/2)*80+0x2000*(y&1)+x;
 
  asm	push	si
@@ -287,7 +287,7 @@ void DoCGAMblit(int x,int y,int width,int height,int yadd,int hadd)
  else
  if (yadd || hadd)
    {
-    char huge *CGAscrn=MK_FP(0xb800,0);
+    char *CGAscrn=MK_FP(0xb800,0);
 
     for (j=globaly;j<globaly+yadd;j++)
       for (i=globalx;i<globalx+width;i++)

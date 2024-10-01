@@ -5,15 +5,15 @@
 #include "igrab.h"
 #pragma hdrstop
 
-unsigned char huge *infile,
-	      huge *outfile;
+uint8_t *infile,
+	      *outfile;
 
-long inlength,outlength;
+int32_t inlength,outlength;
 
-long counts[256];
+int32_t counts[256];
 
 unsigned huffbits[256];
-unsigned long huffstring[256];
+uint32_t huffstring[256];
 
 huffnode nodearray[256];	// 256 nodes is worst case
 
@@ -38,9 +38,9 @@ huffnode nodearray[256];	// 256 nodes is worst case
 ======================
 */
 
-void CountBytes (unsigned char huge *start, long length)
+void CountBytes (uint8_t *start, int32_t length)
 {
-  long i;
+  int32_t i;
 
   while (length--)
     counts[*start++]++;
@@ -59,7 +59,7 @@ void CountBytes (unsigned char huge *start, long length)
 int FindLeast (void)
 {
   int i,least;
-  long low = 0x7fffffff;
+  int32_t low = 0x7fffffff;
 
   for (i=0;i<256;i++)
     if (counts[i]<low)
@@ -84,7 +84,7 @@ int FindLeast (void)
 ==================
 */
 
-void TraceNode (int nodenum,int numbits,unsigned long bitstring)
+void TraceNode (int nodenum,int numbits,uint32_t bitstring)
 {
   unsigned bit0,bit1;
 
@@ -101,7 +101,7 @@ void TraceNode (int nodenum,int numbits,unsigned long bitstring)
   }
   else
   {
-    if (numbits<24)			// if the string is this long, its 0
+    if (numbits<24)			// if the string is this int32_t, its 0
       TraceNode (bit0-256,numbits,bitstring);
   }
 
@@ -117,7 +117,7 @@ void TraceNode (int nodenum,int numbits,unsigned long bitstring)
   }
   else
   {
-    if (numbits<24)			// if the string is this long, its 0
+    if (numbits<24)			// if the string is this int32_t, its 0
 	 TraceNode (bit1-256,numbits,bitstring+(1ul<<(numbits-1)));
   }
 }
@@ -144,10 +144,10 @@ void Huffmanize (void)
 // probablilities are the number of times the code is hit or $ffffffff if
 // it is allready part of a higher node
 //
-  unsigned long prob[256],low,workprob;
+  uint32_t prob[256],low,workprob;
 
   int i,worknode,bitlength;
-  unsigned long bitstring;
+  uint32_t bitstring;
 
   memset(huffstring,0,sizeof(huffstring));
   memset(huffbits,0,sizeof(huffbits));
@@ -262,32 +262,25 @@ void OptimizeNodes (huffnode *table)
 ======================
 */
 
-long HuffCompress (unsigned char huge *source, long length,
-  unsigned char huge *dest)
+int32_t HuffCompress (uint8_t *source, int32_t length,
+  uint8_t *dest)
 {
-  long outlength;
-  unsigned long string;
+  int32_t outlength;
+  uint32_t string;
   unsigned biton,bits;
-  unsigned char byte;
-
-
-  if (length<60000)
-  {
-	FastHuffCompress(source,length,dest);
-	return;
-  }
+  uint8_t byte;
 
   outlength = biton = 0;
 
-  *(long huge *)dest=0;		// so bits can be or'd on
+  *(int32_t *)dest=0;		// so bits can be or'd on
 
   while (length--)
   {
 	byte = *source++;
 	bits = huffbits[byte];
 	string = huffstring[byte] << biton;
-	*(long huge *)(dest+1)=0;	// so bits can be or'd on
-	*(long huge *)dest |= string;
+	*(int32_t *)(dest+1)=0;	// so bits can be or'd on
+	*(int32_t *)dest |= string;
 	biton += bits;		// advance this many bits
 	dest+= biton/8;
 	biton&=7;			// stay under 8 shifts
@@ -307,8 +300,8 @@ long HuffCompress (unsigned char huge *source, long length,
 ======================
 */
 
-void HuffExpand (unsigned char huge *source, unsigned char huge *dest,
-  long length,huffnode *hufftable)
+void HuffExpand (uint8_t *source, uint8_t *dest,
+  int32_t length,huffnode *hufftable)
 {
   unsigned bit,byte,node,code;
   unsigned sourceseg,sourceoff,destseg,destoff,endseg,endoff;

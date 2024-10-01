@@ -14,7 +14,7 @@
 //
 // FONT/M format:
 // unsigned numchars       - 2 bytes
-// unsigned charoffs[256]  - 512 bytes
+// uint8_toffs[256]  - 512 bytes
 // char charwidths[256]    - 256 bytes
 // data  - masked: mask first, then data
 //       - nomask: data
@@ -183,7 +183,7 @@ void GrabFont(grabtype type)
 	   if (type==FONTMTYPE)
 	     {
 	      unsigned loop4,datoff,charsize=fheight*((cwidths[loop1]+3)/4),tmp;
-	      unsigned char c,huge *CGAscrn=MK_FP(0xb800,0);
+	      uint8_t c,*CGAscrn=MK_FP(0xb800,0);
 
 	      datoff=charoff[loop1];
 
@@ -199,7 +199,7 @@ void GrabFont(grabtype type)
 	   else
 	     {
 	      unsigned loop4,datoff,tmp;
-	      unsigned char c,huge *CGAscrn=MK_FP(0xb800,0);
+	      uint8_t c,*CGAscrn=MK_FP(0xb800,0);
 
 	      datoff=charoff[loop1];
 
@@ -229,7 +229,7 @@ void GrabFont(grabtype type)
 	   if (type==FONTMTYPE)
 	     {
 	      unsigned loop4,datoff,charsize=fheight*((cwidths[loop1]+7)/8);
-	      unsigned char c,huge *EGAscrn=MK_FP(0xa000,0);
+	      uint8_t c,*EGAscrn=MK_FP(0xa000,0);
 
 	      outport(GCindex,GCmode);
 	      for (loop4=0;loop4<4;loop4++)
@@ -250,7 +250,7 @@ void GrabFont(grabtype type)
 	   else
 	     {
 	      unsigned loop4,datoff;
-	      unsigned char c,huge *EGAscrn=MK_FP(0xa000,0);
+	      uint8_t c,*EGAscrn=MK_FP(0xa000,0);
 
 	      outport(GCindex,GCmode);
 	      for (loop4=0;loop4<4;loop4++)
@@ -285,7 +285,7 @@ void GrabFont(grabtype type)
 	   if (type==FONTMTYPE)
 	     {
 	      unsigned loop4,datoff,charsize=fheight*cwidths[loop1];
-	      unsigned char c,huge *VGAscrn=MK_FP(0xa000,0);
+	      uint8_t c,*VGAscrn=MK_FP(0xa000,0);
 
 	      datoff=charoff[loop1];
 
@@ -300,7 +300,7 @@ void GrabFont(grabtype type)
 	   else
 	     {
 	      unsigned loop4,datoff;
-	      unsigned char c,huge *VGAscrn=MK_FP(0xa000,0);
+	      uint8_t c,*VGAscrn=MK_FP(0xa000,0);
 
 	      datoff=charoff[loop1];
 
@@ -333,7 +333,7 @@ void GrabFont(grabtype type)
 	  FP_SEG(databuffer+2),FP_OFF(databuffer+2),512);
  movedata(FP_SEG(cwidths),FP_OFF(cwidths),
 	  FP_SEG(databuffer+514),FP_OFF(databuffer+514),256);
- *(int huge *)databuffer=fheight;
+ *(int *)databuffer=fheight;
 
  //
  // save file out
@@ -465,8 +465,8 @@ void DoBlit(int x,int y,int width,int height)
 int CheckSparse(int x,int y)
 {
  int i,j;
- long size;
- unsigned char c;
+ int32_t size;
+ uint8_t c;
 
  switch(format[0])
    {
@@ -739,7 +739,7 @@ void GrabTile(grabtype type)
 	   // Munge VGA ModeX graphics?
 	   //
 	   if (ModeX)
-	     VL_MungePic((unsigned char far *)databuffer+offset,hw,hw);
+	     VL_MungePic((uint8_t *)databuffer+offset,hw,hw);
 
 	   offset+=Data[newtype].graphlen[gmode];
 	  }
@@ -791,7 +791,7 @@ void GrabPics(grabtype type)
 {
  int strptr,loop,x,y,w,h;
  char *str,*comp=", ",*comp1="0123456789",name[40],*comp2="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
- long size;
+ int32_t size;
 
 
  if (Data[PIC].num==PicAmount)
@@ -848,7 +848,7 @@ void GrabPics(grabtype type)
       }
     (PicmTable+Data[PICM].num)->width=w;
     (PicmTable+Data[PICM].num)->height=h*8;
-    _fmemcpy((char far *)PicMNames+Data[PICM].num*NAMELEN,name,NAMELEN);
+    memcpy((char *)PicMNames+Data[PICM].num*NAMELEN,name,NAMELEN);
     PicMOffs[Data[PICM].num]=Data[PICM].offset;
     PicMOffs[Data[PICM].num+1]=Data[PICM].offset+size;
     Data[PICM].offset+=size;
@@ -877,7 +877,7 @@ void GrabPics(grabtype type)
       }
     (PicTable+Data[PIC].num)->width=w;
     (PicTable+Data[PIC].num)->height=h*8;
-    _fmemcpy((char far *)PicNames+Data[PIC].num*NAMELEN,(char far *)name,NAMELEN);
+    memcpy((char *)PicNames+Data[PIC].num*NAMELEN,(char *)name,NAMELEN);
     PicOffs[Data[PIC].num]=Data[PIC].offset;
     PicOffs[Data[PIC].num+1]=Data[PIC].offset+size;
     Data[PIC].offset+=size;
@@ -898,7 +898,7 @@ void GrabSprites(void)
 {
  int oldh,ychng,strptr,loop,x,y,w,h,xl,yl,xh,yh;
  char *str1,*str,*comp=", ",*comp1="-0123456789",name[40],*comp2="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
- long size;
+ int32_t size;
 
  if (Data[SPRITE].num==MAXSPRITES)
    {
@@ -1042,7 +1042,7 @@ void GrabSprites(void)
 
  SpriteTable[Data[SPRITE].num].width=w;
  SpriteTable[Data[SPRITE].num].height=h;
- _fmemcpy((char far *)SpriteNames+Data[SPRITE].num*NAMELEN,(char far *)name,NAMELEN);
+ memcpy((char *)SpriteNames+Data[SPRITE].num*NAMELEN,(char *)name,NAMELEN);
  SpriteOffs[Data[SPRITE].num]=Data[SPRITE].offset;
  SpriteOffs[Data[SPRITE].num+1]=Data[SPRITE].offset+size;
  Data[SPRITE].offset+=size;

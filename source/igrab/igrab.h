@@ -1,14 +1,11 @@
 #include <memory.h>
-#include <io.h>
-#include <dos.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 #include <string.h>
-#include <alloc.h>
-#include <bios.h>
 #include <fcntl.h>
 #include <time.h>
+
+#include <stdint.h>
 
 #include "xms.h"
 
@@ -93,7 +90,7 @@ typedef enum {FONT,FONTM,TILE8,TILE8M,TILE16,TILE16M,TILE32,TILE32M,
 typedef enum {CGA,EGA,VGA,SGA}graphtype;
 
 typedef struct { unsigned num,graphlen[4];
-		 long offset; } DataStruct;
+		 int32_t offset; } DataStruct;
 
 typedef struct { unsigned y,height; } OptStruct;
 
@@ -106,7 +103,7 @@ typedef enum {DATA,CODE,FARDATA} segtype;	// FOR MAKEOBJ ONLY
 //
 // IGRAB
 //
-char huge *LoadLBM(char *filename,LBMtype *);
+char *LoadLBM(char *filename,LBMtype *);
 char CharEdgeCheck(int x,int y);
 int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char *farname);
 void CheckBuffer(void);
@@ -114,8 +111,8 @@ void DeleteTmpFiles(void);
 void AddDataToFile(char *filename);
 void FlushData(void);
 void videomode(int planes);
-void SaveFile(char *filename,char huge *buffer, long size,long offset);
-unsigned long LoadFile(char *filename,char huge *buffer,long offset,long size);
+void SaveFile(char *filename,char *buffer, int32_t size,int32_t offset);
+uint32_t LoadFile(char *filename,char *buffer,int32_t offset,int32_t size);
 void errout(char *string);
 void settext(void);
 
@@ -124,30 +121,30 @@ void settext(void);
 //
 void CGAgrab(int x,int y,int width,int height,unsigned offset);
 void DoCGAblit(int x,int y,int width,int height);
-void CGAblit(int x,int y,int width,int height,char huge *buffer);
+void CGAblit(int x,int y,int width,int height,char *buffer);
 void CGAMgrab(int x,int y,int width,int height,unsigned offset,int optimize);
 void DoCGAMblit(int x,int y,int width,int height,int yadd,int hadd);
-void CGAMblit(int x,int y,int width,int height,char huge *buffer);
+void CGAMblit(int x,int y,int width,int height,char *buffer);
 
 //
 // GRABEGA
 //
-void EGAgrab(int x,int y,int width,int height,long offset);
+void EGAgrab(int x,int y,int width,int height,int32_t offset);
 void DoEGAblit(int x,int y,int width,int height);
-void EGAblit(int x,int y,int width,int height,char huge *buffer);
-void EGAMgrab(int x,int y,int width,int height,long offset,int optimize);
+void EGAblit(int x,int y,int width,int height,char *buffer);
+void EGAMgrab(int x,int y,int width,int height,int32_t offset,int optimize);
 void DoEGAMblit(int x,int y,int width,int height,int yadd,int hadd);
-void EGAMblit(int x,int y,int width,int height,char huge *buffer);
+void EGAMblit(int x,int y,int width,int height,char *buffer);
 
 //
 // GRABVGA
 //
 void VGAgrab(int x,int y,int width,int height,unsigned offset);
 void DoVGAblit(int x,int y,int width,int height);
-void VGAblit(int x,int y,int width,int height,char huge *buffer);
+void VGAblit(int x,int y,int width,int height,char *buffer);
 void VGAMgrab(int x,int y,int width,int height,unsigned offset,int optimize);
 void DoVGAMblit(int x,int y,int width,int height,int yadd,int hadd);
-void VGAMblit(int x,int y,int width,int height,char huge *buffer);
+void VGAMblit(int x,int y,int width,int height,char *buffer);
 
 //
 // FINISH
@@ -156,10 +153,10 @@ void CreateHeaders(void);
 void FinishUp(void);
 void FindType(char *string);
 void LoadKeyword(char *string,int grabbed);
-void FreeXMSbuffs(int *handle1,int *handle2,char *filename,long start,long size);
+void FreeXMSbuffs(int *handle1,int *handle2,char *filename,int32_t start,int32_t size);
 void DispStatusScreen(void);
 int CheckXMSamount(char *filename,int *handle1,int *handle2);
-long filelen(char *filename);
+int32_t filelen(char *filename);
 void CompressData(void);
 void CompressFonts(void);
 void CompressPics(void);
@@ -174,7 +171,7 @@ void CompressSpecial(void);
 void CreateGraphFiles(void);
 void CreateOBJs(void);
 void UpdateWindow(void);
-void VL_MungePic (unsigned char far *source, unsigned width, unsigned height);
+void VL_MungePic (uint8_t *source, unsigned width, unsigned height);
 
 //
 // DOGRAB
@@ -191,22 +188,16 @@ void GrabSprites(void);
 //
 // JHUFF
 //
-void CountBytes (unsigned char huge *start, long length);
-long HuffCompress (unsigned char huge *source, long length,
-  unsigned char huge *dest);
-
-//
-// COMP_A.ASM
-//
-long FastHuffCompress (unsigned char huge *source, long length,
-  unsigned char huge *dest);
+void CountBytes (uint8_t *start, int32_t length);
+int32_t HuffCompress (uint8_t *source, int32_t length,
+  uint8_t *dest);
 
 //
 // VARS
 //
 extern time_t tblock;
 extern LBMtype CurrentLBM;
-extern PicStruct far *PicTable,far *PicmTable;
+extern PicStruct *PicTable,*PicmTable;
 extern SprStruct SpriteTable[MAXSPRITES];
 extern FILE *fp;
 extern grabtype type;
@@ -216,18 +207,18 @@ extern OptStruct Optimum;
 
 extern char typestr[5];
 
-extern char picname[64],huge *Sparse;
+extern char picname[64],*Sparse;
 
-extern char huge *PicNames,huge *SpriteNames,huge *PicMNames,
-	    huge *ChunkNames,huge *MiscNames,huge *MiscFNames;
+extern char *PicNames,*SpriteNames,*PicMNames,
+	    *ChunkNames,*MiscNames,*MiscFNames;
 
-extern unsigned char format[2], scriptname[64],dest[13],string[80],ext[10],huge *lbmscreen,
-     huge *databuffer,huge *maskscreen,ScreenColor,huge *T8bit,huge *T16bit,huge *T32bit,
+extern uint8_t format[2], scriptname[64],dest[13],string[80],ext[10],*lbmscreen,
+     *databuffer,*maskscreen,ScreenColor,*T8bit,*T16bit,*T32bit,
      typelist[17][10],path[64],NumMisc;
-extern long offset,size,fsize,tile8off,tile8moff,tile16off,tile16moff,
+extern int32_t offset,size,fsize,tile8off,tile8moff,tile16off,tile16moff,
      tile32off,tile32moff,picoff,picmoff,spriteoff,fontoff,fontmoff,
-     FontOffs[MAXFONT],far *PicOffs,SpriteOffs[MAXSPRITES],FontMOffs[MAXFONT],
-     far *PicMOffs,bufmax,comp_size;
+     FontOffs[MAXFONT],*PicOffs,SpriteOffs[MAXSPRITES],FontMOffs[MAXFONT],
+     *PicMOffs,bufmax,comp_size;
 extern unsigned begin,j,i,gotstr,frac,temp,keycheck,compress,
 	 end,gottiles,globalx,globaly,globalmaxh,nostacking,noshow,shifts,
 	 fastgrab,totalobjects,leavetmp,cmpt8,genobj,ChunkStart[MAXSPRITES/8],
@@ -235,9 +226,25 @@ extern unsigned begin,j,i,gotstr,frac,temp,keycheck,compress,
 	 T8whichbit,T16whichbit,T32whichbit,setbit,lumpactive,SkipToStart,
 	 Do4offs,ModeX,PicAmount;
 
-extern char far SCREEN;
+extern char SCREEN;
 extern int handle;
 
-extern long counts[256];
-extern unsigned long huffstring[256];
+extern int32_t counts[256];
+extern uint32_t huffstring[256];
 extern huffnode nodearray[256];	// 256 nodes is worst case
+
+//
+// COMPAT
+//
+#define FP_OFF(p) p
+#define FP_SEG(p) p
+
+void settext(void);
+void nosound(void);
+
+void outport(int port, int value);
+
+#ifndef _MSC_VER
+char *strupr(char *s);
+char *itoa(int value, char *string, int radix);
+#endif

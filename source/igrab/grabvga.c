@@ -11,7 +11,7 @@
 // VGAblit : blits a VGA shape from memory to the VGA screen
 //
 ////////////////////////////////////////////////////////////
-void VGAblit(int x,int y,int width,int height,char huge *buffer)
+void VGAblit(int x,int y,int width,int height,char *buffer)
 {
  unsigned ESreg,DIreg,SIreg,DSreg,where,owidth,addx;
 
@@ -177,7 +177,7 @@ void VGAgrab(int x,int y,int width,int height,unsigned offset)
 // VGAMblit : blits a VGA masked shape from memory to the VGA screen
 //
 ////////////////////////////////////////////////////////////
-void VGAMblit(int x,int y,int width,int height,char huge *buffer)
+void VGAMblit(int x,int y,int width,int height,char *buffer)
 {
  unsigned MASKoff,DATAoff,ESreg,DIreg,SIreg,DSreg,where,oheight,owidth,addx;
 
@@ -203,7 +203,7 @@ void VGAMblit(int x,int y,int width,int height,char huge *buffer)
 
  DSreg=FP_SEG(buffer);
  MASKoff=FP_OFF(buffer);
- DATAoff=FP_OFF((char far *)buffer+owidth*oheight);
+ DATAoff=FP_OFF((char *)buffer+owidth*oheight);
  where=y*320+x;
 
  asm	push	si
@@ -274,7 +274,7 @@ void DoVGAMblit(int x,int y,int width,int height,int yadd,int hadd)
  else
  if (yadd || hadd)
    {
-    char huge *VGAscrn=MK_FP(0xa000,0);
+    char *VGAscrn=MK_FP(0xa000,0);
 
     for (j=globaly;j<globaly+yadd;j++)
       for (i=globalx;i<globalx+width;i++)

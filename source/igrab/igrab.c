@@ -12,7 +12,7 @@
 //
 time_t tblock;
 LBMtype CurrentLBM;
-PicStruct far *PicTable,far *PicmTable;
+PicStruct *PicTable,*PicmTable;
 SprStruct SpriteTable[MAXSPRITES];
 FILE *fp;
 grabtype type;
@@ -31,20 +31,20 @@ DataStruct Data[11]={{0,{0,0,0,0},0},		// font
 
 extern char typestr[5];
 
-char picname[64],huge *Sparse;
+char picname[64],*Sparse;
 
-char huge *PicNames,huge *SpriteNames,huge *PicMNames,huge *ChunkNames,
-     huge *MiscNames,huge *MiscFNames;
+char *PicNames,*SpriteNames,*PicMNames,*ChunkNames,
+     *MiscNames,*MiscFNames;
 
-unsigned char format[2],scriptname[64],dest[13],string[80],ext[10],huge *lbmscreen,
-     huge *databuffer,huge *maskscreen,ScreenColor,
+uint8_t format[2],scriptname[64],dest[13],string[80],ext[10],*lbmscreen,
+     *databuffer,*maskscreen,ScreenColor,
      typelist[17][10]={"FONT","FONTM","TILE8","TILE8","TILE8M","TILE8M","TILE16","TILE16",
        "TILE16M","TILE16M","TILE32","TILE32","TILE32M","TILE32M","PIC","PICM","SPRITE"},
-     huge *T8bit,huge *T16bit,huge *T32bit,path[64],NumMisc;
-long offset,size,fsize,tile8off,tile8moff,tile16off,tile16moff,
+     *T8bit,*T16bit,*T32bit,path[64],NumMisc;
+int32_t offset,size,fsize,tile8off,tile8moff,tile16off,tile16moff,
      tile32off,tile32moff,picoff,picmoff,spriteoff,fontoff,fontmoff,
-     FontOffs[MAXFONT],far *PicOffs,SpriteOffs[MAXSPRITES],FontMOffs[MAXFONT],
-     far *PicMOffs,bufmax,comp_size;
+     FontOffs[MAXFONT],*PicOffs,SpriteOffs[MAXSPRITES],FontMOffs[MAXFONT],
+     *PicMOffs,bufmax,comp_size;
 unsigned begin,j,i,gotstr,frac,temp,keycheck,compress,
 	 end,gottiles,globalx,globaly,globalmaxh,nostacking,noshow,shifts,
 	 fastgrab,totalobjects,leavetmp,cmpt8,genobj,ChunkStart[MAXSPRITES/8],
@@ -197,11 +197,11 @@ void main(int argc,char **argv)
  if (bit)
    {
     if (cmpt8)
-      if ((T8bit=(char huge *)farmalloc(NUMBITARRAY))==NULL)
+      if ((T8bit=(char *)malloc(NUMBITARRAY))==NULL)
 	errout("Not enough memory for BITARRAY for TILE8's!");
-    if ((T16bit=(char huge *)farmalloc(NUMBITARRAY))==NULL)
+    if ((T16bit=(char *)malloc(NUMBITARRAY))==NULL)
       errout("Not enough memory for BITARRAY for TILE16's!");
-    if ((T32bit=(char huge *)farmalloc(NUMBITARRAY))==NULL)
+    if ((T32bit=(char *)malloc(NUMBITARRAY))==NULL)
       errout("Not enough memory for BITARRAY for TILE32's!");
 
     for (i=0;i<NUMBITARRAY;i++)
@@ -221,19 +221,19 @@ void main(int argc,char **argv)
  // Initialize stuff
  //
 
- PicTable=farmalloc(PicAmount*sizeof(PicStruct));
- PicmTable=farmalloc(PicAmount*sizeof(PicStruct));
- PicOffs=farmalloc(PicAmount*4);
- PicMOffs=farmalloc(PicAmount*4);
+ PicTable=malloc(PicAmount*sizeof(PicStruct));
+ PicmTable=malloc(PicAmount*sizeof(PicStruct));
+ PicOffs=malloc(PicAmount*4);
+ PicMOffs=malloc(PicAmount*4);
  shifts=4;
 
  //
  // The "8L" takes up "font/m,tile8/m,tile16/m & tile32/m spots
  //
- if ((Sparse=(char huge *)farmalloc(8L*totalobjects))==NULL)
+ if ((Sparse=(char *)malloc(8L*totalobjects))==NULL)
    errout("Not enough memory for SPARSE table allocation!");
 
- if ((databuffer=(char huge *)farmalloc(bufmax))==NULL)
+ if ((databuffer=(char *)malloc(bufmax))==NULL)
    errout("Memory allocation for data buffer failed!");
 
  frac=1;
@@ -252,12 +252,12 @@ void main(int argc,char **argv)
  DispStatusScreen();
  window(2,8,78,19);
 
- PicNames=(char huge *)farmalloc((long)PicAmount*NAMELEN);
- PicMNames=(char huge *)farmalloc((long)PicAmount*NAMELEN);
- SpriteNames=(char huge *)farmalloc((long)MAXSPRITES*NAMELEN);
- ChunkNames=farmalloc((long)MAXSPRITES/8*CHKNAMELEN);
- MiscNames=farmalloc((long)MAXPICS*NAMELEN);
- MiscFNames=farmalloc((long)MAXPICS*FNAMELEN);
+ PicNames=(char *)malloc((int32_t)PicAmount*NAMELEN);
+ PicMNames=(char *)malloc((int32_t)PicAmount*NAMELEN);
+ SpriteNames=(char *)malloc((int32_t)MAXSPRITES*NAMELEN);
+ ChunkNames=malloc((int32_t)MAXSPRITES/8*CHKNAMELEN);
+ MiscNames=malloc((int32_t)MAXPICS*NAMELEN);
+ MiscFNames=malloc((int32_t)MAXPICS*FNAMELEN);
 
  if (!PicNames || !PicMNames || !SpriteNames || !ChunkNames || !MiscNames || !MiscFNames)
    errout("Not enough memory for Name arrays!");
@@ -367,8 +367,8 @@ void main(int argc,char **argv)
 	  {
 	   char *s1,*s2,comp[]="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			       "abcdefghijklmnopqrstuvwxyz_",
-	   comp1[]=",\x9\r\n",*s3,huge *tempdata;
-	   long len;
+	   comp1[]=",\x9\r\n",*s3,*tempdata;
+	   int32_t len;
 
 
 	   s1=strpbrk(string+6,comp);
@@ -378,11 +378,11 @@ void main(int argc,char **argv)
 	   s3=strpbrk(s2,comp1);
 	   *s3=0;
 
-	   _fstrcpy((char far *)MiscNames+NumMisc*NAMELEN,(char far *)s1);
-	   _fstrcpy((char far *)MiscFNames+NumMisc*NAMELEN,(char far *)s2);
+	   _fstrcpy((char *)MiscNames+NumMisc*NAMELEN,(char *)s1);
+	   _fstrcpy((char *)MiscFNames+NumMisc*NAMELEN,(char *)s2);
 
 	   len=filelen(s2);
-	   tempdata=farmalloc(len);
+	   tempdata=malloc(len);
 	   if (access(s2,0))
 	   {
 	    char errst[60]="The external file '";
@@ -392,8 +392,8 @@ void main(int argc,char **argv)
 	   }
 
 	   LoadFile(s2,tempdata,0,0);
-	   CountBytes((unsigned char huge *)tempdata,len);
-	   farfree((void far *)tempdata);
+	   CountBytes((uint8_t *)tempdata,len);
+	   free((void *)tempdata);
 
 	   NumMisc++;
 	  }
@@ -435,8 +435,8 @@ void main(int argc,char **argv)
 	  {
 	   char *s1,*s2,comp[]="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 			       "abcdefghijklmnopqrstuvwxyz_",
-	   comp1[]=",\x9\r\n",*s3,huge *tempdata;
-	   long len;
+	   comp1[]=",\x9\r\n",*s3,*tempdata;
+	   int32_t len;
 
 
 	   s1=strpbrk(string+6,comp);
@@ -446,11 +446,11 @@ void main(int argc,char **argv)
 	   s3=strpbrk(s2,comp1);
 	   *s3=0;
 
-	   _fstrcpy((char far *)MiscNames+NumMisc*NAMELEN,(char far *)s1);
-	   _fstrcpy((char far *)MiscFNames+NumMisc*NAMELEN,(char far *)s2);
+	   _fstrcpy((char *)MiscNames+NumMisc*NAMELEN,(char *)s1);
+	   _fstrcpy((char *)MiscFNames+NumMisc*NAMELEN,(char *)s2);
 
 	   len=filelen(s2);
-	   tempdata=farmalloc(len);
+	   tempdata=malloc(len);
 
 	   if (access(s2,0))
 	   {
@@ -461,8 +461,8 @@ void main(int argc,char **argv)
 	   }
 
 	   LoadFile(s2,tempdata,0,0);
-	   CountBytes((unsigned char huge *)tempdata,len);
-	   farfree((void far *)tempdata);
+	   CountBytes((uint8_t *)tempdata,len);
+	   free((void *)tempdata);
 
 	   NumMisc++;
 	  }
@@ -505,12 +505,12 @@ void main(int argc,char **argv)
 	   if (lumpactive)
 	     {
 	      char erstr[200]="You tried to start a LUMP before ending the current lump ";
-	      _fstrcat((char far *)erstr,(char far *)ChunkNames+whichchunk*CHKNAMELEN);
+	      _fstrcat((char *)erstr,(char *)ChunkNames+whichchunk*CHKNAMELEN);
 	      strcat(erstr,"!");
 	      errout(erstr);
 	     }
 
-	   _fmemcpy((char far *)ChunkNames+whichchunk*CHKNAMELEN,(char far *)string+5,CHKNAMELEN);
+	   memcpy((char *)ChunkNames+whichchunk*CHKNAMELEN,(char *)string+5,CHKNAMELEN);
 	   *(ChunkNames+whichchunk*CHKNAMELEN+CHKNAMELEN-1)=0;
 	   ChunkType[whichchunk]=newtype[type];
 	   ChunkStart[whichchunk]=Data[ChunkType[whichchunk]].num;
@@ -778,7 +778,7 @@ void DeleteTmpFiles(void)
 void AddDataToFile(char *filename)
 {
  int handle;
- long olength;
+ int32_t olength;
  char newname[20];
 
  strcpy(newname,filename);
@@ -815,13 +815,13 @@ void settext(void)
 // by John Romero (C) 1991 Id Software
 //
 ////////////////////////////////////////////////////////////
-void SaveFile(char *filename,char huge *buffer, long size,long offset)
+void SaveFile(char *filename,char *buffer, int32_t size,int32_t offset)
 {
  struct dfree disk;
  unsigned int handle,buf1,buf2,offlo,offhi,sizelo,sizehi;
 
  getdfree(0,&disk);
- if ((long)disk.df_avail*disk.df_bsec*disk.df_sclus<size)
+ if ((int32_t)disk.df_avail*disk.df_bsec*disk.df_sclus<size)
    errout("Not enough disk space!");
 
  buf1=FP_OFF(buffer);
@@ -912,7 +912,7 @@ asm		int	21h
 // by John Romero (C) 1991 Id Software
 //
 ////////////////////////////////////////////////////////////
-unsigned long LoadFile(char *filename,char huge *buffer,long offset,long size)
+uint32_t LoadFile(char *filename,char *buffer,int32_t offset,int32_t size)
 {
  unsigned handle,flength1=0,flength2=0,buf1,buf2,len1,len2,
 	  rsize1,rsize2,roffset1,roffset2;
@@ -1089,8 +1089,8 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
       MODEND[5]={0x8a,2,0,0,0x74};
 
  unsigned i,j,flag,handle;
- long fsize,offset,loffset,temp,amtleft,amount,offset1;
- char huge *dblock,huge *block;
+ int32_t fsize,offset,loffset,temp,amtleft,amount,offset1;
+ char *dblock,*block;
 
 
  //
@@ -1111,13 +1111,13 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
  if (fsize>0x10000L)		// BIGGER THAN 1 SEG = ERROR!
    return -2;
 
- block=(char huge *)farmalloc(fsize);
+ block=(char *)malloc(fsize);
  if (block==NULL)
    errout("No memory to create OBJ!");
  LoadFile(filename,block,0,0);	// LOAD FILE IN
  offset=0;
 
- dblock=(char huge *)farmalloc(0x10000L);
+ dblock=(char *)malloc(0x10000L);
  if (dblock==NULL)
    errout("No memory to create OBJ!");
 
@@ -1160,7 +1160,7 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
  // the CHECKSUM and LENGTH
  temp=offset;
  offset=offset-loffset-2;
- *(int huge *)(dblock+loffset+1)=offset;
+ *(int *)(dblock+loffset+1)=offset;
  offset=temp;
 
  // Now, figure out the CHECKSUM of the record
@@ -1181,19 +1181,19 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
   case DATA:
     movedata(FP_SEG(&SEGDEF),FP_OFF(&SEGDEF),
 	     FP_SEG(dblock),FP_OFF(dblock)+offset,sizeof(SEGDEF));
-    *(int huge *)(dblock+offset+4)=temp;
+    *(int *)(dblock+offset+4)=temp;
     offset+=sizeof(SEGDEF);
     break;
   case CODE:
     movedata(FP_SEG(&SEGDEF1),FP_OFF(&SEGDEF1),
 	     FP_SEG(dblock),FP_OFF(dblock)+offset,sizeof(SEGDEF1));
-    *(int huge *)(dblock+offset+4)=temp;
+    *(int *)(dblock+offset+4)=temp;
     offset+=sizeof(SEGDEF1);
     break;
   case FARDATA:
     movedata(FP_SEG(&SEGDEF2),FP_OFF(&SEGDEF2),
 	     FP_SEG(dblock),FP_OFF(dblock)+offset,sizeof(SEGDEF2));
-    *(int huge *)(dblock+offset+4)=temp;
+    *(int *)(dblock+offset+4)=temp;
     offset+=sizeof(SEGDEF2);
     break;
  }
@@ -1235,14 +1235,14 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
 	  FP_SEG(dblock),FP_OFF(dblock)+offset+1,strlen(public));
  *(dblock+offset)=strlen(public);
  offset+=strlen(public)+1;
- *(int huge *)(dblock+offset)=0;	// public offset within segment
+ *(int *)(dblock+offset)=0;	// public offset within segment
  offset+=2;
  *(dblock+offset)=0;		// type index
  offset++;
 
  // LENGTH
  temp=offset-loffset-2;
- *(int huge *)(dblock+loffset+1)=temp;
+ *(int *)(dblock+loffset+1)=temp;
  offset++;
 
  // CHECKSUM
@@ -1267,15 +1267,15 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
     // RECORD HEADER
     //
     *(dblock+offset)=0xa0;			// LEDATA ID
-    *(int huge *)(dblock+offset+1)=amount+4;	// length of record
+    *(int *)(dblock+offset+1)=amount+4;	// length of record
     offset+=3;
     *(dblock+offset)=1;				// segment index
-    *(int huge *)(dblock+offset+1)=i*1024;	// index into segment
+    *(int *)(dblock+offset+1)=i*1024;	// index into segment
     offset+=3;
     //
     // LOAD DATA IN
     //
-    LoadFile(filename,(char huge *)dblock+offset,i*1024,amount);
+    LoadFile(filename,(char *)dblock+offset,i*1024,amount);
     offset+=amount;
     //
     // CHECKSUM!
@@ -1298,8 +1298,8 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
  //
  // Save the little puppy out!
  //
- SaveFile(destfilename,(char huge *)dblock,offset,0);
- farfree((void far *)block);
- farfree((void far *)dblock);
+ SaveFile(destfilename,(char *)dblock,offset,0);
+ free((void *)block);
+ free((void *)dblock);
  return 0;
 }

@@ -6,11 +6,11 @@
 #include "igrab.h"
 #pragma hdrstop
 
-long huge *fileoffs;
+int32_t *fileoffs;
 int xms;
 unsigned numall;
 char grname[14],headname[14];
-long startlen,currentlen=0,oldlen=0,constcomp,constlen;
+int32_t startlen,currentlen=0,oldlen=0,constcomp,constlen;
 unsigned vtab,start=0,allsparse=0;
 int oldhtab,oldvtab,xmsSource,xmsDest,xmsok;
 
@@ -33,8 +33,8 @@ void FinishUp(void)
  //
  // deallocate all the memory!
  //
- farfree((void far *)lbmscreen);
- farfree((void far *)databuffer);
+ free((void *)lbmscreen);
+ free((void *)databuffer);
  if (!leavetmp)
    DeleteTmpFiles();
 
@@ -131,7 +131,7 @@ void FindType(char *string)
 /////////////////////////////////////////////////////////
 void LoadKeyword(char *string,int grabbed)
 {
- char huge *EGAscrn=MK_FP(0xa000,0),huge *CGAscrn=MK_FP(0xb800,0);
+ char *EGAscrn=MK_FP(0xa000,0),*CGAscrn=MK_FP(0xb800,0);
 
  //
  // GET A KEYPRESS
@@ -204,9 +204,9 @@ void LoadKeyword(char *string,int grabbed)
  // blast any buffers still intact
  //
  if (lbmscreen!=NULL)
-    farfree((void far *)lbmscreen);
+    free((void *)lbmscreen);
  if (maskscreen!=NULL)
-    farfree((void far *)maskscreen);
+    free((void *)maskscreen);
 
  lbmscreen=maskscreen=NULL;	// do this OR ELSE!
 
@@ -365,7 +365,7 @@ void LoadKeyword(char *string,int grabbed)
  //
  {
   unsigned DSreg,SIreg,i,lwidth,height;
-  long size;
+  int32_t size;
 
 
   lwidth=CurrentLBM.width/8;
@@ -414,7 +414,7 @@ void LoadKeyword(char *string,int grabbed)
 /////////////////////////////////////////////////////////
 int CheckXMSamount(char *filename,int *handle1,int *handle2)
 {
- long size,clen,coff;
+ int32_t size,clen,coff;
 
  if (!xms)
    return 0;
@@ -437,7 +437,7 @@ int CheckXMSamount(char *filename,int *handle1,int *handle2)
     clen=size;
 
   LoadFile(filename,lbmscreen,coff,clen);
-  XMSmove(0,(long)lbmscreen,*handle1,coff,clen);
+  XMSmove(0,(int32_t)lbmscreen,*handle1,coff,clen);
   size-=0x8000;
   coff+=clen;
  } while(size>0);
@@ -451,9 +451,9 @@ int CheckXMSamount(char *filename,int *handle1,int *handle2)
 // Free XMS buffers, if any
 //
 /////////////////////////////////////////////////////////
-void FreeXMSbuffs(int *handle1,int *handle2,char *filename,long start,long size)
+void FreeXMSbuffs(int *handle1,int *handle2,char *filename,int32_t start,int32_t size)
 {
- long clen,coff;
+ int32_t clen,coff;
 
  if (!xms || (!*handle1 && !*handle2))
    return;
@@ -465,7 +465,7 @@ void FreeXMSbuffs(int *handle1,int *handle2,char *filename,long start,long size)
   if (size<0x8000)
     clen=size;
 
-  XMSmove(*handle2,coff,0,(long)lbmscreen,clen);
+  XMSmove(*handle2,coff,0,(int32_t)lbmscreen,clen);
   SaveFile(filename,lbmscreen,clen,start+coff);
   size-=0x8000;
   coff+=clen;
@@ -482,9 +482,9 @@ void FreeXMSbuffs(int *handle1,int *handle2,char *filename,long start,long size)
 // Get file's length
 //
 /////////////////////////////////////////////////////////
-long filelen(char *string)
+int32_t filelen(char *string)
 {
- long size;
+ int32_t size;
  int handle;
 
  if ((handle=_open(string,O_BINARY))<0)
@@ -503,7 +503,7 @@ long filelen(char *string)
 /////////////////////////////////////////////////////////
 void DispStatusScreen(void)
 {
- _fmemcpy((void far *)MK_FP(0xb800,0),&SCREEN+7,4000);
+ memcpy((void *)MK_FP(0xb800,0),&SCREEN+7,4000);
 
  window(1,1,80,25);
  gotoxy(43,4);
@@ -522,7 +522,7 @@ void DispStatusScreen(void)
 void CreateHeaders(void)
 {
  char str[50],temp[5];
- long start;
+ int32_t start;
  int chnk=0;
 
 
@@ -560,7 +560,7 @@ void CreateHeaders(void)
        chnk++;
       }
 
-    _fmemcpy((char far *)str,(char far *)PicNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)PicNames+i*NAMELEN,50);
     strcat(str,"PIC");
     if (!i)
       fprintf(fp,"\t\t%s=%d,\n",str,i+Data[PIC].offset);
@@ -585,7 +585,7 @@ void CreateHeaders(void)
        chnk++;
       }
 
-    _fmemcpy((char far *)str,(char far *)PicMNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)PicMNames+i*NAMELEN,50);
     strcat(str,"PICM");
     if (!i)
       fprintf(fp,"\t\t%s=%d,\n",str,i+Data[PICM].offset);
@@ -610,7 +610,7 @@ void CreateHeaders(void)
        chnk++;
       }
 
-    _fmemcpy((char far *)str,(char far *)SpriteNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)SpriteNames+i*NAMELEN,50);
     strcat(str,"SPR");
     if (!i)
       fprintf(fp,"\t\t%s=%d,\n",str,i+Data[SPRITE].offset);
@@ -629,7 +629,7 @@ void CreateHeaders(void)
    {
     int end;
 
-    _fmemcpy((char far *)str,(char far *)MiscNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)MiscNames+i*NAMELEN,50);
     if (!i)
       fprintf(fp,"\t\t%s=%d,\n",str,i+Data[TILE32M].offset+Data[TILE32M].num);
     else
@@ -653,20 +653,20 @@ void CreateHeaders(void)
    {
     int end;
 
-    for (j=0;j<_fstrlen((char far *)ChunkNames+i*CHKNAMELEN);j++)
+    for (j=0;j<_fstrlen((char *)ChunkNames+i*CHKNAMELEN);j++)
       if (*(ChunkNames+i*CHKNAMELEN+j)=='\r')
 	{
 	 *(ChunkNames+i*CHKNAMELEN+j)=0;
 	 break;
 	}
 
-    _fmemcpy((char far *)str,(char far *)ChunkNames+i*CHKNAMELEN,50);
+    memcpy((char *)str,(char *)ChunkNames+i*CHKNAMELEN,50);
     strcat(str,"_LUMP_START");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
     fprintf(fp,"#define %s%d\n",str,ChunkStart[i]+Data[ChunkType[i]].offset);
 
-    _fmemcpy((char far *)str,(char far *)ChunkNames+i*CHKNAMELEN,50);
+    memcpy((char *)str,(char *)ChunkNames+i*CHKNAMELEN,50);
     strcat(str,"_LUMP_END");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
@@ -911,7 +911,7 @@ void CreateHeaders(void)
 
  for (i=0;i<Data[PIC].num;i++)
    {
-    _fmemcpy((char far *)str,(char far *)PicNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)PicNames+i*NAMELEN,50);
     strcat(str,"PIC");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
@@ -922,7 +922,7 @@ void CreateHeaders(void)
 
  for (i=0;i<Data[PICM].num;i++)
    {
-    _fmemcpy((char far *)str,(char far *)PicMNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)PicMNames+i*NAMELEN,50);
     strcat(str,"PICM");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
@@ -933,7 +933,7 @@ void CreateHeaders(void)
 
  for (i=0;i<Data[SPRITE].num;i++)
    {
-    _fmemcpy((char far *)str,(char far *)SpriteNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)SpriteNames+i*NAMELEN,50);
     strcat(str,"SPR");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
@@ -944,7 +944,7 @@ void CreateHeaders(void)
 
  for (i=0;i<NumMisc;i++)
    {
-    _fmemcpy((char far *)str,(char far *)MiscNames+i*NAMELEN,50);
+    memcpy((char *)str,(char *)MiscNames+i*NAMELEN,50);
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
     fprintf(fp,"%s=	%d\n",str,i+Data[TILE32M].offset+Data[TILE32M].num);
@@ -954,20 +954,20 @@ void CreateHeaders(void)
 
  for (i=0;i<whichchunk;i++)
    {
-    for (j=0;j<_fstrlen((char far *)ChunkNames+i*CHKNAMELEN);j++)
+    for (j=0;j<_fstrlen((char *)ChunkNames+i*CHKNAMELEN);j++)
       if (*(ChunkNames+i*CHKNAMELEN+j)=='\r')
 	{
 	 *(ChunkNames+i*CHKNAMELEN+j)=0;
 	 break;
 	}
 
-    _fmemcpy((char far *)str,(char far *)ChunkNames+i*CHKNAMELEN,50);
+    memcpy((char *)str,(char *)ChunkNames+i*CHKNAMELEN,50);
     strcat(str,"_LUMP_START");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
     fprintf(fp,"%s=\x9%d\n",str,ChunkStart[i]+Data[ChunkType[i]].offset);
 
-    _fmemcpy((char far *)str,(char far *)ChunkNames+i*CHKNAMELEN,50);
+    memcpy((char *)str,(char *)ChunkNames+i*CHKNAMELEN,50);
     strcat(str,"_LUMP_END");
     for (end=(48-strlen(str)-9)/8,j=0;j<end;j++)
       strcat(str,"\x9");
@@ -1234,7 +1234,7 @@ void CompressFonts(void)
 
     for (i=0;i<Data[FONT].num;i++)
       {
-       long newlen,length=FontOffs[i+1]-FontOffs[i];
+       int32_t newlen,length=FontOffs[i+1]-FontOffs[i];
 
        gotoxy(44,wherey());
        printf("%d",i+1);
@@ -1242,7 +1242,7 @@ void CompressFonts(void)
        constlen+=length;
        oldlen+=length;
        fileoffs[Data[FONT].offset+i]=currentlen;
-       *(long huge *)databuffer=length;
+       *(int32_t *)databuffer=length;
        LoadFile("FONT.TMP",lbmscreen,FontOffs[i],length);
        newlen=HuffCompress(lbmscreen,length,databuffer+4);
        SaveFile(grname,databuffer,newlen+4,currentlen);
@@ -1274,7 +1274,7 @@ void CompressFonts(void)
 
     for (i=0;i<Data[FONTM].num;i++)
       {
-       long newlen,length=FontMOffs[i+1]-FontMOffs[i];
+       int32_t newlen,length=FontMOffs[i+1]-FontMOffs[i];
 
        gotoxy(44,wherey());
        printf("%d",i+1);
@@ -1282,7 +1282,7 @@ void CompressFonts(void)
        constlen+=length;
        oldlen+=length;
        fileoffs[Data[FONTM].offset+i]=currentlen;
-       *(long huge *)databuffer=length;
+       *(int32_t *)databuffer=length;
        LoadFile("FONTM.TMP",lbmscreen,FontMOffs[i],length);
        newlen=HuffCompress(lbmscreen,length,databuffer+4);
        SaveFile(grname,databuffer,newlen+4,currentlen);
@@ -1311,7 +1311,7 @@ void CompressPics(void)
 {
  if (Data[PIC].num)
    {
-    long newlen,length;
+    int32_t newlen,length;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1344,25 +1344,25 @@ void CompressPics(void)
        constlen+=length;
        oldlen+=length;
        fileoffs[Data[PIC].offset+i]=currentlen;
-       *(long huge *)databuffer=length;
+       *(int32_t *)databuffer=length;
 
        if (!xmsok)
 	 LoadFile("PIC.TMP",lbmscreen,PicOffs[i],length);
        else
-	 XMSmove(xmsSource,PicOffs[i],0,(long)lbmscreen,length);
+	 XMSmove(xmsSource,PicOffs[i],0,(int32_t)lbmscreen,length);
 
        //
        // Munge VGA ModeX graphics?
        //
        if (ModeX)
-	 VL_MungePic((unsigned char far *)lbmscreen,(PicTable+i)->width,(PicTable+i)->height);
+	 VL_MungePic((uint8_t *)lbmscreen,(PicTable+i)->width,(PicTable+i)->height);
 
        newlen=HuffCompress(lbmscreen,length,databuffer+4)+4;
 
        if (!xmsok)
 	 SaveFile(grname,databuffer,newlen,currentlen);
        else
-	 XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	 XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
        currentlen+=newlen;
        constcomp+=newlen;
@@ -1383,7 +1383,7 @@ void CompressPics(void)
 
  if (Data[PICM].num)
    {
-    long newlen,length;
+    int32_t newlen,length;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1414,25 +1414,25 @@ void CompressPics(void)
        constlen+=length;
        oldlen+=length;
        fileoffs[Data[PICM].offset+i]=currentlen;
-       *(long huge *)databuffer=length;
+       *(int32_t *)databuffer=length;
 
        if (!xmsok)
 	 LoadFile("PICM.TMP",lbmscreen,PicMOffs[i],length);
        else
-	 XMSmove(xmsSource,PicMOffs[i],0,(long)lbmscreen,length);
+	 XMSmove(xmsSource,PicMOffs[i],0,(int32_t)lbmscreen,length);
 
        //
        // Munge VGA ModeX graphics?
        //
        if (ModeX)
-	 VL_MungePic((unsigned char far *)lbmscreen,PicmTable[i].width,PicmTable[i].height);
+	 VL_MungePic((uint8_t *)lbmscreen,PicmTable[i].width,PicmTable[i].height);
 
        newlen=HuffCompress(lbmscreen,length,databuffer+4)+4;
 
        if (!xmsok)
 	 SaveFile(grname,databuffer,newlen,currentlen);
        else
-	 XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	 XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
        currentlen+=newlen;
        constcomp+=newlen;
@@ -1461,7 +1461,7 @@ void CompressSprites(void)
 {
  if (Data[SPRITE].num)
    {
-    long newlen,length;
+    int32_t newlen,length;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1492,25 +1492,25 @@ void CompressSprites(void)
        constlen+=length;
        oldlen+=length;
        fileoffs[Data[SPRITE].offset+i]=currentlen;
-       *(long huge *)databuffer=length;
+       *(int32_t *)databuffer=length;
 
        if (!xmsok)
 	 LoadFile("SPRITE.TMP",lbmscreen,SpriteOffs[i],length);
        else
-	 XMSmove(xmsSource,SpriteOffs[i],0,(long)lbmscreen,length);
+	 XMSmove(xmsSource,SpriteOffs[i],0,(int32_t)lbmscreen,length);
 
        //
        // Munge VGA ModeX graphics?
        //
        if (ModeX)
-	 VL_MungePic((unsigned char far *)lbmscreen,SpriteTable[i].width,SpriteTable[i].height);
+	 VL_MungePic((uint8_t *)lbmscreen,SpriteTable[i].width,SpriteTable[i].height);
 
        newlen=HuffCompress(lbmscreen,length,databuffer+4)+4;
 
        if (!xmsok)
 	 SaveFile(grname,databuffer,newlen,currentlen);
        else
-	 XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	 XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
        currentlen+=newlen;
        constcomp+=newlen;
@@ -1534,7 +1534,7 @@ void Compress8(void)
 {
  if (Data[TILE8].num)
    {
-    long newlen,length,spcount=0,clen=0;
+    int32_t newlen,length,spcount=0,clen=0;
 
 
     //
@@ -1609,7 +1609,7 @@ void Compress8(void)
 
  if (Data[TILE8M].num)
    {
-    long clen=0,newlen,length,spcount=0;
+    int32_t clen=0,newlen,length,spcount=0;
 
 
     //
@@ -1693,7 +1693,7 @@ void Compress16(void)
 {
  if (Data[TILE16].num)
    {
-    long clen=0,newlen,length,spcount=0;
+    int32_t clen=0,newlen,length,spcount=0;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1733,14 +1733,14 @@ void Compress16(void)
 	  if (!xmsok)
 	    LoadFile("TILE16.TMP",lbmscreen,clen,length);
 	  else
-	    XMSmove(xmsSource,clen,0,(long)lbmscreen,length);
+	    XMSmove(xmsSource,clen,0,(int32_t)lbmscreen,length);
 
 	  newlen=HuffCompress(lbmscreen,length,databuffer);
 
 	  if (!xmsok)
 	    SaveFile(grname,databuffer,newlen,currentlen);
 	  else
-	    XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	    XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
 	  currentlen+=newlen;
 	  clen+=length;
@@ -1764,7 +1764,7 @@ void Compress16(void)
 
  if (Data[TILE16M].num)
    {
-    long clen=0,newlen,length,spcount=0;
+    int32_t clen=0,newlen,length,spcount=0;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1804,14 +1804,14 @@ void Compress16(void)
 	  if (!xmsok)
 	    LoadFile("TILE16M.TMP",lbmscreen,clen,length);
 	  else
-	    XMSmove(xmsSource,clen,0,(long)lbmscreen,length);
+	    XMSmove(xmsSource,clen,0,(int32_t)lbmscreen,length);
 
 	  newlen=HuffCompress(lbmscreen,length,databuffer);
 
 	  if (!xmsok)
 	    SaveFile(grname,databuffer,newlen,currentlen);
 	  else
-	    XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	    XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
 	  currentlen+=newlen;
 	  clen+=length;
@@ -1844,7 +1844,7 @@ void Compress32(void)
 {
  if (Data[TILE32].num)
    {
-    long clen=0,newlen,length,spcount=0;
+    int32_t clen=0,newlen,length,spcount=0;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1884,14 +1884,14 @@ void Compress32(void)
 	  if (!xmsok)
 	    LoadFile("TILE32.TMP",lbmscreen,clen,length);
 	  else
-	    XMSmove(xmsSource,clen,0,(long)lbmscreen,length);
+	    XMSmove(xmsSource,clen,0,(int32_t)lbmscreen,length);
 
 	  newlen=HuffCompress(lbmscreen,length,databuffer);
 
 	  if (!xmsok)
 	    SaveFile(grname,databuffer,newlen,currentlen);
 	  else
-	    XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	    XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
 	  currentlen+=newlen;
 	  clen+=length;
@@ -1915,7 +1915,7 @@ void Compress32(void)
 
  if (Data[TILE32M].num)
    {
-    long clen=0,newlen,length,spcount=0;
+    int32_t clen=0,newlen,length,spcount=0;
 
     constlen=constcomp=0;
     gotoxy(30,wherey());
@@ -1955,14 +1955,14 @@ void Compress32(void)
 	  if (!xmsok)
 	    LoadFile("TILE32M.TMP",lbmscreen,clen,length);
 	  else
-	    XMSmove(xmsSource,clen,0,(long)lbmscreen,length);
+	    XMSmove(xmsSource,clen,0,(int32_t)lbmscreen,length);
 
 	  newlen=HuffCompress(lbmscreen,length,databuffer);
 
 	  if (!xmsok)
 	    SaveFile(grname,databuffer,newlen,currentlen);
 	  else
-	    XMSmove(0,(long)databuffer,xmsDest,currentlen-startlen,newlen);
+	    XMSmove(0,(int32_t)databuffer,xmsDest,currentlen-startlen,newlen);
 
 	  currentlen+=newlen;
 	  clen+=length;
@@ -2001,13 +2001,13 @@ void SetupFinish(void)
 
 
  if (maskscreen!=NULL)
-   farfree((void far *)maskscreen);
+   free((void *)maskscreen);
  if (lbmscreen!=NULL)
-   farfree((void far *)lbmscreen);
+   free((void *)lbmscreen);
 
- lbmscreen=(char huge *)farmalloc(comp_size);
+ lbmscreen=(char *)malloc(comp_size);
 
- if ((fileoffs=(long huge *)farmalloc((totalobjects+1)*4L))==NULL)
+ if ((fileoffs=(int32_t *)malloc((totalobjects+1)*4L))==NULL)
    errout("Not enough memory to allocate massive FILEOFF array!");
 
  if (!begin)
@@ -2059,9 +2059,9 @@ void SetupFinish(void)
 /////////////////////////////////////////////////////////
 void CreateOffsets(void)
 {
- CountBytes((unsigned char huge *)PicTable,Data[PIC].num*sizeof(PicStruct));
- CountBytes((unsigned char huge *)PicmTable,Data[PICM].num*sizeof(PicStruct));
- CountBytes((unsigned char huge *)&SpriteTable,Data[SPRITE].num*sizeof(SprStruct));
+ CountBytes((uint8_t *)PicTable,Data[PIC].num*sizeof(PicStruct));
+ CountBytes((uint8_t *)PicmTable,Data[PICM].num*sizeof(PicStruct));
+ CountBytes((uint8_t *)&SpriteTable,Data[SPRITE].num*sizeof(SprStruct));
 
  Huffmanize();	// create the dictionary
  //
@@ -2127,66 +2127,66 @@ void CompressSpecial(void)
  //
  if (Data[PIC].num)
    {
-    long newlen,length=Data[PIC].num*sizeof(PicStruct);
+    int32_t newlen,length=Data[PIC].num*sizeof(PicStruct);
 
     fileoffs[start]=currentlen;
-    *(long huge *)databuffer=length;
-    newlen=HuffCompress((char huge *)PicTable,length,databuffer+4);
+    *(int32_t *)databuffer=length;
+    newlen=HuffCompress((char *)PicTable,length,databuffer+4);
     SaveFile(grname,databuffer,newlen+4,currentlen);
     currentlen+=newlen+4;
     start++;
    }
  if (Data[PICM].num)
    {
-    long newlen,length=Data[PICM].num*sizeof(PicStruct);
+    int32_t newlen,length=Data[PICM].num*sizeof(PicStruct);
 
     fileoffs[start]=currentlen;
-    *(long huge *)databuffer=length;
-    newlen=HuffCompress((char huge *)PicmTable,length,databuffer+4);
+    *(int32_t *)databuffer=length;
+    newlen=HuffCompress((char *)PicmTable,length,databuffer+4);
     SaveFile(grname,databuffer,newlen+4,currentlen);
     currentlen+=newlen+4;
     start++;
    }
  if (Data[SPRITE].num)
    {
-    long newlen,length=Data[SPRITE].num*sizeof(SprStruct);
+    int32_t newlen,length=Data[SPRITE].num*sizeof(SprStruct);
 
     fileoffs[start]=currentlen;
-    *(long huge *)databuffer=length;
-    newlen=HuffCompress((char huge *)&SpriteTable,length,databuffer+4);
+    *(int32_t *)databuffer=length;
+    newlen=HuffCompress((char *)&SpriteTable,length,databuffer+4);
     SaveFile(grname,databuffer,newlen+4,currentlen);
     currentlen+=newlen+4;
     start++;
    }
  if (bit && T8whichbit)
    {
-    long newlen,length=(T8whichbit+7)/8;
+    int32_t newlen,length=(T8whichbit+7)/8;
 
     fileoffs[start]=currentlen;
-    *(long huge *)databuffer=length;
-    newlen=HuffCompress((char huge *)T8bit,length,databuffer+4);
+    *(int32_t *)databuffer=length;
+    newlen=HuffCompress((char *)T8bit,length,databuffer+4);
     SaveFile(grname,databuffer,newlen+4,currentlen);
     currentlen+=newlen+4;
     start++;
    }
  if (bit && T16whichbit)
    {
-    long newlen,length=(T16whichbit+7)/8;
+    int32_t newlen,length=(T16whichbit+7)/8;
 
     fileoffs[start]=currentlen;
-    *(long huge *)databuffer=length;
-    newlen=HuffCompress((char huge *)T16bit,length,databuffer+4);
+    *(int32_t *)databuffer=length;
+    newlen=HuffCompress((char *)T16bit,length,databuffer+4);
     SaveFile(grname,databuffer,newlen+4,currentlen);
     currentlen+=newlen+4;
     start++;
    }
  if (bit && T32whichbit)
    {
-    long newlen,length=(T32whichbit+7)/8;
+    int32_t newlen,length=(T32whichbit+7)/8;
 
     fileoffs[start]=currentlen;
-    *(long huge *)databuffer=length;
-    newlen=HuffCompress((char huge *)T32bit,length,databuffer+4);
+    *(int32_t *)databuffer=length;
+    newlen=HuffCompress((char *)T32bit,length,databuffer+4);
     SaveFile(grname,databuffer,newlen+4,currentlen);
     currentlen+=newlen+4;
     start++;
@@ -2202,7 +2202,7 @@ void CompressSpecial(void)
 void CompressMisc(void)
 {
  int start,i;
- long len,newlen,constcomp,constlen;
+ int32_t len,newlen,constcomp,constlen;
  char temp[NAMELEN];
 
 
@@ -2219,12 +2219,12 @@ void CompressMisc(void)
     gotoxy(44,wherey());
     printf("%d",i+1);
 
-    _fstrcpy((char far *)temp,(char far *)MiscFNames+i*NAMELEN);
+    _fstrcpy((char *)temp,(char *)MiscFNames+i*NAMELEN);
     fileoffs[i+start]=currentlen;
     len=filelen(temp);
     constlen+=len;
     LoadFile(temp,lbmscreen,0,0);
-    *(long huge *)databuffer=len;
+    *(int32_t *)databuffer=len;
     newlen=HuffCompress(lbmscreen,len,databuffer+4)+4;
     SaveFile(grname,databuffer,newlen,currentlen);
     constcomp+=newlen;
@@ -2316,18 +2316,18 @@ void CreateGraphFiles(void)
  if (!Do4offs)
  {
   unsigned i;
-  char huge *newoffs;
+  char *newoffs;
 
-  if ((newoffs=farmalloc(3L*(numall+1)))==NULL)
+  if ((newoffs=malloc(3L*(numall+1)))==NULL)
     errout("Not enough memory to create 3-byte OFFSETS!");
 
   for (i=0;i<numall+1;i++)
-    *(long huge *)(newoffs+3L*i)=fileoffs[i];
+    *(int32_t *)(newoffs+3L*i)=fileoffs[i];
 
-  SaveFile(dest,(char huge *)newoffs,3L*(numall+1),0);
+  SaveFile(dest,(char *)newoffs,3L*(numall+1),0);
  }
  else
-   SaveFile(dest,(char huge *)fileoffs,4*(numall+1),0);
+   SaveFile(dest,(char *)fileoffs,4*(numall+1),0);
 
  //
  // Create EGADICT.ext file
@@ -2337,7 +2337,7 @@ void CreateGraphFiles(void)
 
   name[0]=format[0];
   strcat(name,ext);
-  SaveFile(name,(char huge *)&nodearray,sizeof(nodearray),0);
+  SaveFile(name,(char *)&nodearray,sizeof(nodearray),0);
  }
 
  //
@@ -2345,12 +2345,12 @@ void CreateGraphFiles(void)
  //
  {
   char name[14]="GFXINFO?.";
-  InfoStruct huge *infofile;
+  InfoStruct *infofile;
 
-  if((infofile=(InfoStruct huge *)farmalloc(sizeof(InfoStruct)))==NULL)
+  if((infofile=(InfoStruct *)malloc(sizeof(InfoStruct)))==NULL)
     errout("Not enough memory to create GFXINFO file!");
 
-  _fmemset((void far *)infofile,0,sizeof(InfoStruct));
+  _fmemset((void *)infofile,0,sizeof(InfoStruct));
   infofile->num8=Data[TILE8].num;
   infofile->num8m=Data[TILE8M].num;
   infofile->num16=Data[TILE16].num;
@@ -2378,7 +2378,7 @@ void CreateGraphFiles(void)
 
   name[7]=format[0];
   strcat(name,ext);
-  SaveFile(name,(char huge *)infofile,sizeof(InfoStruct),0);
+  SaveFile(name,(char *)infofile,sizeof(InfoStruct),0);
  }
 }
 
@@ -2469,10 +2469,10 @@ void UpdateWindow(void)
 =
 =================
 */
-void VL_MungePic (unsigned char far *source, unsigned width, unsigned height)
+void VL_MungePic (uint8_t *source, unsigned width, unsigned height)
 {
 	unsigned	x,y,plane,size,pwidth;
-	unsigned char	far *temp, far *dest, far *srcline;
+	uint8_t	*temp, *dest, *srcline;
 
 	size = width*height;
 
@@ -2482,11 +2482,11 @@ void VL_MungePic (unsigned char far *source, unsigned width, unsigned height)
 //
 // copy the pic to a temp buffer
 //
-	temp = (unsigned char far *)farmalloc (size);
+	temp = (uint8_t *)malloc (size);
 	if (!temp)
 		errout ("Non enough memory for munge buffer!\n");
 
-	_fmemcpy (temp,source,size);
+	memcpy (temp,source,size);
 
 //
 // munge it back into the original buffer
@@ -2505,6 +2505,6 @@ void VL_MungePic (unsigned char far *source, unsigned width, unsigned height)
 		}
 	}
 
-	farfree (temp);
+	free (temp);
 }
 
