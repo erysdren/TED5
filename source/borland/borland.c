@@ -1,7 +1,33 @@
 
 #include <ctype.h>
-#include "igrab.h"
-#pragma hdrstop
+#include <stdio.h>
+#include <time.h>
+
+#include "borland.h"
+
+/*
+ * compatibility routines for the Borland C standard library
+ */
+
+void randomize(void)
+{
+	srand(time(NULL));
+}
+
+void settext(void)
+{
+	/* stub */
+}
+
+void nosound(void)
+{
+	/* stub */
+}
+
+void outport(int port, int value)
+{
+	/* stub */
+}
 
 #ifndef _MSC_VER
 
@@ -29,18 +55,3 @@ char *itoa(int value, char *string, int radix)
 }
 
 #endif
-
-void settext(void)
-{
-	/* stub */
-}
-
-void nosound(void)
-{
-	/* stub */
-}
-
-void outport(int port, int value)
-{
-	/* stub */
-}

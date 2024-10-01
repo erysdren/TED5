@@ -1,3 +1,7 @@
+
+#ifndef _IGRAB_H_
+#define _IGRAB_H_
+
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +12,8 @@
 #include <stdint.h>
 
 #include "xms.h"
+
+#include "borland.h"
 
 #define VERSION		"0.40"
 #define TITLESTR	"IGRAB v"VERSION" by John Romero (C) 1991 Id Software\n\r"
@@ -233,18 +239,4 @@ extern int32_t counts[256];
 extern uint32_t huffstring[256];
 extern huffnode nodearray[256];	// 256 nodes is worst case
 
-//
-// COMPAT
-//
-#define FP_OFF(p) p
-#define FP_SEG(p) p
-
-void settext(void);
-void nosound(void);
-
-void outport(int port, int value);
-
-#ifndef _MSC_VER
-char *strupr(char *s);
-char *itoa(int value, char *string, int radix);
-#endif
+#endif /* _IGRAB_H_ */
