@@ -231,11 +231,11 @@ void GrabFont(grabtype type)
 	      unsigned loop4,datoff,charsize=fheight*((cwidths[loop1]+7)/8);
 	      unsigned char c,huge *EGAscrn=MK_FP(0xa000,0);
 
-	      outport(GCindex,GCmode);
+	      outp(GCindex,GCmode);
 	      for (loop4=0;loop4<4;loop4++)
 		{
-		 outport(GCindex,GCreadmap | (loop4*256));
-		 outport(SCindex,SCmapmask | (1<<loop4)*256);
+		 outp(GCindex,GCreadmap | (loop4*256));
+		 outp(SCindex,SCmapmask | (1<<loop4)*256);
 		 datoff=charoff[loop1];
 
 		 for (loop2=0;loop2<fheight;loop2++)
@@ -252,11 +252,11 @@ void GrabFont(grabtype type)
 	      unsigned loop4,datoff;
 	      unsigned char c,huge *EGAscrn=MK_FP(0xa000,0);
 
-	      outport(GCindex,GCmode);
+	      outp(GCindex,GCmode);
 	      for (loop4=0;loop4<4;loop4++)
 		{
-		 outport(GCindex,GCreadmap | (loop4*256));
-		 outport(SCindex,SCmapmask | (1<<loop4)*256);
+		 outp(GCindex,GCreadmap | (loop4*256));
+		 outp(SCindex,SCmapmask | (1<<loop4)*256);
 		 datoff=charoff[loop1];
 
 		 for (loop2=0;loop2<fheight;loop2++)

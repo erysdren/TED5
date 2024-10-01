@@ -5,10 +5,17 @@
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
-#include <alloc.h>
 #include <bios.h>
 #include <fcntl.h>
 #include <time.h>
+
+#ifdef __WATCOMC__
+#include <malloc.h>
+#include <graph.h>
+#define gotoxy(x, y) _settextposition(y, x)
+#else
+#include <alloc.h>
+#endif
 
 #include "xms.h"
 

@@ -33,8 +33,8 @@ void FinishUp(void)
  //
  // deallocate all the memory!
  //
- farfree((void far *)lbmscreen);
- farfree((void far *)databuffer);
+ _ffree((void far *)lbmscreen);
+ _ffree((void far *)databuffer);
  if (!leavetmp)
    DeleteTmpFiles();
 
@@ -204,9 +204,9 @@ void LoadKeyword(char *string,int grabbed)
  // blast any buffers still intact
  //
  if (lbmscreen!=NULL)
-    farfree((void far *)lbmscreen);
+    _ffree((void far *)lbmscreen);
  if (maskscreen!=NULL)
-    farfree((void far *)maskscreen);
+    _ffree((void far *)maskscreen);
 
  lbmscreen=maskscreen=NULL;	// do this OR ELSE!
 
@@ -228,8 +228,8 @@ void LoadKeyword(char *string,int grabbed)
 	break;
 
       case 'E':
-	outport(GCindex,GCmode);
-	outport(SCindex,SCmapmask + 0xf00);
+	outp(GCindex,GCmode);
+	outp(SCindex,SCmapmask + 0xf00);
 	for (i=0;i<8000;i++)
 	  *(EGAscrn+i)=0;
 	break;
@@ -271,9 +271,9 @@ void LoadKeyword(char *string,int grabbed)
        case 'E': strcat(maskname,"ME.LBM");
 		 if (!noshow)
 		   {
-		    outport(GCindex,GCmode);
+		    outp(GCindex,GCmode);
 		    ScreenColor=random(15)+1;
-		    outport(SCindex,SCmapmask | (ScreenColor*256));
+		    outp(SCindex,SCmapmask | (ScreenColor*256));
 		    for (i=0;i<8000;i++)
 		      *(EGAscrn+i)=0xff;
 		   }
@@ -371,11 +371,11 @@ void LoadKeyword(char *string,int grabbed)
   lwidth=CurrentLBM.width/8;
   height=CurrentLBM.height;
   size=lwidth*height;
-  outport(GCindex,GCmode);
+  outp(GCindex,GCmode);
 
   for (i=0;i<4;i++)
     {
-      outport(SCindex,SCmapmask | (1<<i)*256);
+      outp(SCindex,SCmapmask | (1<<i)*256);
       DSreg=FP_SEG(lbmscreen)+(size*i)/16;
       SIreg=FP_OFF(lbmscreen)+(size*i)&15;
 
@@ -2001,9 +2001,9 @@ void SetupFinish(void)
 
 
  if (maskscreen!=NULL)
-   farfree((void far *)maskscreen);
+   _ffree((void far *)maskscreen);
  if (lbmscreen!=NULL)
-   farfree((void far *)lbmscreen);
+   _ffree((void far *)lbmscreen);
 
  lbmscreen=(char huge *)farmalloc(comp_size);
 
@@ -2505,6 +2505,6 @@ void VL_MungePic (unsigned char far *source, unsigned width, unsigned height)
 		}
 	}
 
-	farfree (temp);
+	_ffree (temp);
 }
 

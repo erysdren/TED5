@@ -40,7 +40,7 @@ void EGAblit(int x,int y,int width,int height,char huge *buffer)
     addy=(oheight-height)*owidth;
    }
 
- outport(GCindex,GCmode);
+ outp(GCindex,GCmode);
  DSreg=FP_SEG(buffer);
  SIreg=FP_OFF(buffer);
  where=y*40+x;
@@ -229,7 +229,7 @@ void EGAMblit(int x,int y,int width,int height,char huge *buffer)
     addy=(oheight-height)*owidth;
    }
 
- outport(GCindex,GCmode);
+ outp(GCindex,GCmode);
  DSreg=FP_SEG(buffer);
  MASKoff=FP_OFF(buffer);
  DATAoff=FP_OFF((char far *)buffer+owidth*oheight);
@@ -328,23 +328,23 @@ void DoEGAMblit(int x,int y,int width,int height,int yadd,int hadd)
    {
     char huge *EGAscrn=MK_FP(0xa000,0);
 
-    outport(GCindex,GCmode);
+    outp(GCindex,GCmode);
 
     for (j=globaly;j<globaly+yadd;j++)
       for (i=globalx;i<globalx+width;i++)
 	{
-	 outport(SCindex,SCmapmask | 0xf00);
+	 outp(SCindex,SCmapmask | 0xf00);
 	 *(EGAscrn+j*CurrentLBM.width/8+i)=0;
-	 outport(SCindex,SCmapmask | ((ScreenColor^0xf)*256));
+	 outp(SCindex,SCmapmask | ((ScreenColor^0xf)*256));
 	 *(EGAscrn+j*CurrentLBM.width/8+i)=0xff;
 	}
 
     for (j=globaly+yadd+height;j<height+globaly+yadd+hadd;j++)
       for (i=globalx;i<globalx+width;i++)
 	{
-	 outport(SCindex,SCmapmask | 0xf00);
+	 outp(SCindex,SCmapmask | 0xf00);
 	 *(EGAscrn+j*CurrentLBM.width/8+i)=0;
-	 outport(SCindex,SCmapmask | ((ScreenColor^0xf)*256));
+	 outp(SCindex,SCmapmask | ((ScreenColor^0xf)*256));
 	 *(EGAscrn+j*CurrentLBM.width/8+i)=0xff;
 	}
    }

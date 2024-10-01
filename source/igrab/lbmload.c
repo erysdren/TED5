@@ -142,7 +142,7 @@ char huge *LoadLBM(char *filename,LBMtype *thelbm)
 		errout(msg);
 	       }
     }
-  farfree((void far *)startbuff);
+  _ffree((void far *)startbuff);
  return scrnmem;
 }
 

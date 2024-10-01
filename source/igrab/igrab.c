@@ -393,7 +393,7 @@ void main(int argc,char **argv)
 
 	   LoadFile(s2,tempdata,0,0);
 	   CountBytes((unsigned char huge *)tempdata,len);
-	   farfree((void far *)tempdata);
+	   _ffree((void far *)tempdata);
 
 	   NumMisc++;
 	  }
@@ -462,7 +462,7 @@ void main(int argc,char **argv)
 
 	   LoadFile(s2,tempdata,0,0);
 	   CountBytes((unsigned char huge *)tempdata,len);
-	   farfree((void far *)tempdata);
+	   _ffree((void far *)tempdata);
 
 	   NumMisc++;
 	  }
@@ -1299,7 +1299,7 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
  // Save the little puppy out!
  //
  SaveFile(destfilename,(char huge *)dblock,offset,0);
- farfree((void far *)block);
- farfree((void far *)dblock);
+ _ffree((void far *)block);
+ _ffree((void far *)dblock);
  return 0;
 }
