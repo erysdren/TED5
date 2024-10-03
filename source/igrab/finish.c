@@ -315,10 +315,11 @@ void LoadKeyword(char *string,int grabbed)
 
  if (!noshow)
    {
-    _BH=0;
-    _DX=0x1800;
-    _AH=2;
-    geninterrupt(0x10);
+	union REGS r;
+	r.h.ah = 2;
+	r.h.bh = 0;
+	r.w.dx = 0x1800;
+	int86(0x10, &r, &r);
     printf("%s - %s",typelist[type],picname);
    }
  else
@@ -2009,9 +2010,9 @@ void SetupFinish(void)
  if (lbmscreen!=NULL)
    _ffree((void far *)lbmscreen);
 
- lbmscreen=(char huge *)farmalloc(comp_size);
+ lbmscreen=(char huge *)_fmalloc(comp_size);
 
- if ((fileoffs=(long huge *)farmalloc((totalobjects+1)*4L))==NULL)
+ if ((fileoffs=(long huge *)_fmalloc((totalobjects+1)*4L))==NULL)
    errout("Not enough memory to allocate massive FILEOFF array!");
 
  if (!begin)
@@ -2322,7 +2323,7 @@ void CreateGraphFiles(void)
   unsigned i;
   char huge *newoffs;
 
-  if ((newoffs=farmalloc(3L*(numall+1)))==NULL)
+  if ((newoffs=_fmalloc(3L*(numall+1)))==NULL)
     errout("Not enough memory to create 3-byte OFFSETS!");
 
   for (i=0;i<numall+1;i++)
@@ -2351,7 +2352,7 @@ void CreateGraphFiles(void)
   char name[14]="GFXINFO?.";
   InfoStruct huge *infofile;
 
-  if((infofile=(InfoStruct huge *)farmalloc(sizeof(InfoStruct)))==NULL)
+  if((infofile=(InfoStruct huge *)_fmalloc(sizeof(InfoStruct)))==NULL)
     errout("Not enough memory to create GFXINFO file!");
 
   _fmemset((void far *)infofile,0,sizeof(InfoStruct));
@@ -2486,7 +2487,7 @@ void VL_MungePic (unsigned char far *source, unsigned width, unsigned height)
 //
 // copy the pic to a temp buffer
 //
-	temp = (unsigned char far *)farmalloc (size);
+	temp = (unsigned char far *)_fmalloc (size);
 	if (!temp)
 		errout ("Non enough memory for munge buffer!\n");
 

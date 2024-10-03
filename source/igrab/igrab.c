@@ -197,11 +197,11 @@ void main(int argc,char **argv)
  if (bit)
    {
     if (cmpt8)
-      if ((T8bit=(char huge *)farmalloc(NUMBITARRAY))==NULL)
+      if ((T8bit=(char huge *)_fmalloc(NUMBITARRAY))==NULL)
 	errout("Not enough memory for BITARRAY for TILE8's!");
-    if ((T16bit=(char huge *)farmalloc(NUMBITARRAY))==NULL)
+    if ((T16bit=(char huge *)_fmalloc(NUMBITARRAY))==NULL)
       errout("Not enough memory for BITARRAY for TILE16's!");
-    if ((T32bit=(char huge *)farmalloc(NUMBITARRAY))==NULL)
+    if ((T32bit=(char huge *)_fmalloc(NUMBITARRAY))==NULL)
       errout("Not enough memory for BITARRAY for TILE32's!");
 
     for (i=0;i<NUMBITARRAY;i++)
@@ -221,19 +221,19 @@ void main(int argc,char **argv)
  // Initialize stuff
  //
 
- PicTable=farmalloc(PicAmount*sizeof(PicStruct));
- PicmTable=farmalloc(PicAmount*sizeof(PicStruct));
- PicOffs=farmalloc(PicAmount*4);
- PicMOffs=farmalloc(PicAmount*4);
+ PicTable=_fmalloc(PicAmount*sizeof(PicStruct));
+ PicmTable=_fmalloc(PicAmount*sizeof(PicStruct));
+ PicOffs=_fmalloc(PicAmount*4);
+ PicMOffs=_fmalloc(PicAmount*4);
  shifts=4;
 
  //
  // The "8L" takes up "font/m,tile8/m,tile16/m & tile32/m spots
  //
- if ((Sparse=(char huge *)farmalloc(8L*totalobjects))==NULL)
+ if ((Sparse=(char huge *)_fmalloc(8L*totalobjects))==NULL)
    errout("Not enough memory for SPARSE table allocation!");
 
- if ((databuffer=(char huge *)farmalloc(bufmax))==NULL)
+ if ((databuffer=(char huge *)_fmalloc(bufmax))==NULL)
    errout("Memory allocation for data buffer failed!");
 
  frac=1;
@@ -252,12 +252,12 @@ void main(int argc,char **argv)
  DispStatusScreen();
  window(2,8,78,19);
 
- PicNames=(char huge *)farmalloc((long)PicAmount*NAMELEN);
- PicMNames=(char huge *)farmalloc((long)PicAmount*NAMELEN);
- SpriteNames=(char huge *)farmalloc((long)MAXSPRITES*NAMELEN);
- ChunkNames=farmalloc((long)MAXSPRITES/8*CHKNAMELEN);
- MiscNames=farmalloc((long)MAXPICS*NAMELEN);
- MiscFNames=farmalloc((long)MAXPICS*FNAMELEN);
+ PicNames=(char huge *)_fmalloc((long)PicAmount*NAMELEN);
+ PicMNames=(char huge *)_fmalloc((long)PicAmount*NAMELEN);
+ SpriteNames=(char huge *)_fmalloc((long)MAXSPRITES*NAMELEN);
+ ChunkNames=_fmalloc((long)MAXSPRITES/8*CHKNAMELEN);
+ MiscNames=_fmalloc((long)MAXPICS*NAMELEN);
+ MiscFNames=_fmalloc((long)MAXPICS*FNAMELEN);
 
  if (!PicNames || !PicMNames || !SpriteNames || !ChunkNames || !MiscNames || !MiscFNames)
    errout("Not enough memory for Name arrays!");
@@ -382,7 +382,7 @@ void main(int argc,char **argv)
 	   _fstrcpy((char far *)MiscFNames+NumMisc*NAMELEN,(char far *)s2);
 
 	   len=filelen(s2);
-	   tempdata=farmalloc(len);
+	   tempdata=_fmalloc(len);
 	   if (access(s2,0))
 	   {
 	    char errst[60]="The external file '";
@@ -450,7 +450,7 @@ void main(int argc,char **argv)
 	   _fstrcpy((char far *)MiscFNames+NumMisc*NAMELEN,(char far *)s2);
 
 	   len=filelen(s2);
-	   tempdata=farmalloc(len);
+	   tempdata=_fmalloc(len);
 
 	   if (access(s2,0))
 	   {
@@ -1111,13 +1111,13 @@ int MakeOBJ(char *filename,char *destfilename,char *public,segtype whichseg,char
  if (fsize>0x10000L)		// BIGGER THAN 1 SEG = ERROR!
    return -2;
 
- block=(char huge *)farmalloc(fsize);
+ block=(char huge *)_fmalloc(fsize);
  if (block==NULL)
    errout("No memory to create OBJ!");
  LoadFile(filename,block,0,0);	// LOAD FILE IN
  offset=0;
 
- dblock=(char huge *)farmalloc(0x10000L);
+ dblock=(char huge *)_fmalloc(0x10000L);
  if (dblock==NULL)
    errout("No memory to create OBJ!");
 

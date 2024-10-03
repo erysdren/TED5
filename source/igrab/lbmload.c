@@ -65,7 +65,7 @@ char huge *LoadLBM(char *filename,LBMtype *thelbm)
   thelbm->height=height;
   thelbm->planes=planes;
 
-  if ((scrnmem=(char huge *)farmalloc((long)(width/8)*height*planes))==NULL)
+  if ((scrnmem=(char huge *)_fmalloc((long)(width/8)*height*planes))==NULL)
     {
      char str[100]="Not enough memory for loading the ILBM screen '";
 
@@ -157,7 +157,7 @@ void huge *SetupLBM(char *filename)
 
 
  filesize = filelen(filename);
- buffer = startbuff = (char huge *)farmalloc(filesize);
+ buffer = startbuff = (char huge *)_fmalloc(filesize);
  if (buffer==NULL)
  {
    strcpy(errst,"Not enough memory to load ILBM file! Size=");

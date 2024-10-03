@@ -13,6 +13,7 @@
 #include <malloc.h>
 #include <graph.h>
 #define gotoxy(x, y) _settextposition(y, x)
+#define FA_ARCH _A_ARCH
 #else
 #include <alloc.h>
 #endif

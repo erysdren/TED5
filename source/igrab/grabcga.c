@@ -43,45 +43,47 @@ void CGAblit(int x,int y,int width,int height,char huge *buffer)
  SIreg=FP_OFF(buffer);
  where=(y/2)*80+0x2000*(y&1)+x;
 
- asm	push	si
- asm	push	di
- asm	push	ds
- asm	pushf
+	__asm {
+		push	si
+		push	di
+		push	ds
+		pushf
 
- asm	cld
- asm	mov	ax,0xb800
- asm	mov	es,ax
- asm	mov	si,[SIreg]
- asm	mov	ax,[DSreg]
- asm	mov	ds,ax
+		cld
+		mov	ax,0xb800
+		mov	es,ax
+		mov	si,[SIreg]
+		mov	ax,[DSreg]
+		mov	ds,ax
 
- asm	mov	bx,[y]
- asm	mov	di,[where]
- asm	mov	dx,[height]
- LOOP1:
- asm	mov	cx,[width]
- asm	rep movsb
- asm	mov	cx,[addx]	// any to finish up horizontally?
- asm	jcxz	LOOP1a
- asm	rep lodsb
+		mov	bx,[y]
+		mov	di,[where]
+		mov	dx,[height]
+		LOOP1:
+		mov	cx,[width]
+		rep movsb
+		mov	cx,[addx]	// any to finish up horizontally?
+		jcxz	LOOP1a
+		rep lodsb
 
- LOOP1a:
- asm	sub	di,[width]
- asm	xor	di,0x2000	// calculate next CGA line
- asm	inc	bx
- asm	and	bx,1
- asm	or	bx,bx
- asm	jnz	LOOP1a0
- asm	add	di,80
+		LOOP1a:
+		sub	di,[width]
+		xor	di,0x2000	// calculate next CGA line
+		inc	bx
+		and	bx,1
+		or	bx,bx
+		jnz	LOOP1a0
+		add	di,80
 
- LOOP1a0:
- asm	dec	dx
- asm	jnz	LOOP1
+		LOOP1a0:
+		dec	dx
+		jnz	LOOP1
 
- asm	popf
- asm	pop	ds
- asm	pop	di
- asm	pop	si
+		popf
+		pop	ds
+		pop	di
+		pop	si
+	}
 }
 
 
@@ -140,33 +142,35 @@ void CGAgrab(int x,int y,int width,int height,unsigned offset)
  ESreg=FP_SEG(databuffer+offset);
  DIreg=FP_OFF(databuffer+offset);
 
- asm		push	si
- asm		push	di
- asm		push	ds
+	__asm {
+		push	si
+		push	di
+		push	ds
 
- asm		mov	bx,height
- asm		mov	dx,width
+		mov	bx,height
+		mov	dx,width
 
- asm		mov	es,ESreg
- asm		mov	di,DIreg
- asm		mov	si,SIreg
- asm		mov	ax,DSreg
- asm		mov	ds,ax
- asm		cld
+		mov	es,ESreg
+		mov	di,DIreg
+		mov	si,SIreg
+		mov	ax,DSreg
+		mov	ds,ax
+		cld
 
- LOOP1:
+		LOOP1:
 
- asm		mov	cx,dx
- asm		rep movsb
+		mov	cx,dx
+		rep movsb
 
- asm		sub	si,dx
- asm		add	si,scrnwid
- asm		dec	bx
- asm		jnz	LOOP1
+		sub	si,dx
+		add	si,scrnwid
+		dec	bx
+		jnz	LOOP1
 
- asm		pop	ds
- asm		pop	di
- asm		pop	si
+		pop	ds
+		pop	di
+		pop	si
+	}
 
  offset+=width*height;
 }
@@ -214,55 +218,57 @@ void CGAMblit(int x,int y,int width,int height,char huge *buffer)
  DATAoff=FP_OFF((char far *)buffer+owidth*oheight);
  where=(y/2)*80+0x2000*(y&1)+x;
 
- asm	push	si
- asm	push	di
- asm	push	ds
- asm	pushf
+	__asm {
+		push	si
+		push	di
+		push	ds
+		pushf
 
- asm	mov	dx,[DATAoff]
- asm	mov	ds,[DSreg]
+		mov	dx,[DATAoff]
+		mov	ds,[DSreg]
 
- asm	mov	si,[MASKoff]
- asm	mov	di,[where]
- asm	mov	ax,0xb800
- asm	mov	es,ax
+		mov	si,[MASKoff]
+		mov	di,[where]
+		mov	ax,0xb800
+		mov	es,ax
 
- asm	mov	bl,[BYTE PTR y]
- asm	mov	bh,[BYTE PTR height]
- LOOP1:
- asm	mov	cx,[width]
- LOOP1c:
- asm	mov	al,[es:di]
- asm	and	al,[si]		// get mask byte (SI=mask data)
- asm	inc	si
- asm	xchg	si,dx		// SI now = CGA data
- asm	or	al,[si]
- asm	inc	si
- asm	xchg	si,dx		// SI now = MASK data
- asm	stosb
- asm	loop LOOP1c
- asm	mov	cx,[addx]	// any to finish up horizontally?
- asm	jcxz	LOOP1a
- asm	add	si,cx
- asm	add	dx,cx
+		mov	bl,[BYTE PTR y]
+		mov	bh,[BYTE PTR height]
+		LOOP1:
+		mov	cx,[width]
+		LOOP1c:
+		mov	al,[es:di]
+		and	al,[si]		// get mask byte (SI=mask data)
+		inc	si
+		xchg	si,dx		// SI now = CGA data
+		or	al,[si]
+		inc	si
+		xchg	si,dx		// SI now = MASK data
+		stosb
+		loop LOOP1c
+		mov	cx,[addx]	// any to finish up horizontally?
+		jcxz	LOOP1a
+		add	si,cx
+		add	dx,cx
 
- LOOP1a:
- asm	sub	di,[width]	// calculate next CGA line
- asm	xor	di,0x2000
- asm	inc	bl
- asm	and	bl,1
- asm	or	bl,bl
- asm	jnz	LOOP1a0
- asm	add	di,80
+		LOOP1a:
+		sub	di,[width]	// calculate next CGA line
+		xor	di,0x2000
+		inc	bl
+		and	bl,1
+		or	bl,bl
+		jnz	LOOP1a0
+		add	di,80
 
- LOOP1a0:
- asm	dec	bh
- asm	jnz	LOOP1
+		LOOP1a0:
+		dec	bh
+		jnz	LOOP1
 
- asm	popf
- asm	pop	ds
- asm	pop	di
- asm	pop	si
+		popf
+		pop	ds
+		pop	di
+		pop	si
+	}
 }
 
 
