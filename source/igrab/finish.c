@@ -234,18 +234,20 @@ void LoadKeyword(char *string,int grabbed)
 	  *(EGAscrn+i)=0;
 	break;
       case 'V':
-	asm	pushf
-	asm	push	di
-	asm	mov	ax,0xa000
-	asm	mov	es,ax
-	asm	xor	di,di
-	asm	cld
-	asm	mov	cx,(320*200)/2
-	asm	xor	ax,ax
-	asm	rep stosw
-	asm	pop	di
-	asm	popf
-     }
+		__asm {
+			pushf
+			push	di
+			mov	ax,0xa000
+			mov	es,ax
+			xor	di,di
+			cld
+			mov	cx,(320*200)/2
+			xor	ax,ax
+			rep stosw
+			pop	di
+			popf
+		}
+	 }
 
  if (type==FONTMTYPE ||
      type==TILE8MTYPE || type==ALT8MTYPE ||
@@ -283,26 +285,28 @@ void LoadKeyword(char *string,int grabbed)
 		   {
 		    char color=(random(13)+1)*16;
 
-		    asm		pushf
-		    asm		push	di
+			__asm {
+				pushf
+				push	di
 
-		    asm		cld
-		    asm		mov	ax,0xa000
-		    asm		mov	es,ax
-		    asm		xor	di,di
-		    asm		mov	al,[color]
-		    asm		mov	bx,200/12
-		    COLOOP:
-		    asm		mov	cx,320*12
-		    asm		rep stosb
+				cld
+				mov	ax,0xa000
+				mov	es,ax
+				xor	di,di
+				mov	al,[color]
+				mov	bx,200/12
+				COLOOP:
+				mov	cx,320*12
+				rep stosb
 
-		    asm		inc	al
-		    asm		dec	bx
-		    asm		cmp	bx,0
-		    asm		jnz	COLOOP
+				inc	al
+				dec	bx
+				cmp	bx,0
+				jnz	COLOOP
 
-		    asm		pop	di
-		    asm		popf
+				pop	di
+				popf
+			}
 		   }
       }
 
