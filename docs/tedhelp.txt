@@ -58,7 +58,7 @@ data for you at once.  You don't have to look at them all at once.  Pressing
 4, 5, or 6 will turn off each plane, and pressing it again with turn the plane
 on.  If a plane is not displayed, you cannot draw to it with the mouse.
 Pressing 1, 2, or 3 will control which planes you draw on when you left click
-the mouse, or do some other operation.  You cannot turn on drawing to a plane
+the mouse, or do some other operation.  You cannot turn on drawing to a plane
 that isn't being displayed.  For example, pressing three will do nothing if
 you've pressed 6 to turn off the Info plane. And pressing 6 will automatically
 turn off drawing to 3, which you need to watch sometimes!  You may not place
