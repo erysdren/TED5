@@ -118,7 +118,7 @@ MAKING A NEW PROJECT
 The easiest way to make a new project is to cannibalize the old one.  You can
 copy *.SAM to *.NEW, and all the necessary files will be copied.  Now you have
 to change the BAT files to operate with the new extension, and to save out a
-different name, like NEWLEVS.RTL.
+different name, like NEWLEVS.RTL.
 
 CHANGING THE TILES
 There is a TEDTILES directory with an old utility called IGRAB.  This was used
@@ -178,7 +178,7 @@ they liked it so much, they wanted a demo.  We added Mario graphics and Koopas
 and stuff, and sent it to them. It apparently got to the head guys at Nintendo,
 but they didn't want to enter the PC market.  Softdisk didn't want to use the
 smooth scrolling trick Carmack had discovered (since it didn't also work in
-CGA!), so we thought, well, if they don't want it, we could do something
+CGA!), so we thought, well, if they don't want it, we could do something
 ourselves....  Thus Commander Keen was born.
 
 We soon left Softdisk with Adrian Carmack, a fine artist that had joined the
@@ -237,7 +237,7 @@ Bio Menace (licensed Keen Engine)
 Blake Stone: Aliens of Gold
 Blake Stone: Planet Strike
 Rise of the Triad
-When I came over to Apogee to head up in-house development, we used TED for
+When I came over to Apogee to head up in-house development, we used TED for
 Rise of the Triad, which started life as Wolfenstein, Part Two.  So far, that
 makes 34 projects using TED.  Plus we had planned to do an overhead game called
 Fight for Justice after the first Keen, based on the same world that Quake is.
@@ -272,4 +272,3 @@ code, and Wolfenstein's source code is out on the net, there are some fun games
 to be made.  As for me, I bid TED a fond adieu, and say hello to a cool 3D
 editor on the NeXT,  where we'll be making the levels for our new action game,
 Prey.  TED is dead.  Long live TED!
-
